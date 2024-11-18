@@ -6,7 +6,8 @@
   content: '\201D';
 }
 
-.clipboard-popup-header {
+.clipboard-popup-header,
+.see-more-btn {
   background-image: linear-gradient(
     to right top,
     #6403cf,

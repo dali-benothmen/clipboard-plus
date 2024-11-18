@@ -94,10 +94,15 @@ const Popup = () => {
 
   return (
     <div className="clipboard-popup-container flex flex-col justify-center">
-      <h1 className="clipboard-popup-header m-0 py-3.5 px-5 text-base text-center text-white tracking-widest">
+      <h1 className="clipboard-popup-header m-0 py-3.5 px-5 text-base text-center text-white font-bold tracking-widest">
         ClipBoard+
       </h1>
       {renderCopiedItemsList()}
+      {clipboardItems.length > MAX_ITEMS_TO_SHOW && (
+        <button className="see-more-btn m-[15px] h-[29px] w-[50%] self-center text-white font-semibold border-none rounded-full cursor-pointer">
+          See More
+        </button>
+      )}
     </div>
   );
 };
