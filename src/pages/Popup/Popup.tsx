@@ -8,6 +8,8 @@ const MAX_ITEMS_TO_SHOW = 10;
 const Popup = () => {
   const [clipboardItems, setClipboardItems] = useState<ClipboardItem[]>([]);
 
+  console.log({ clipboardItems });
+
   useEffect(() => {
     const fetchClipboardHistory = () => {
       chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
@@ -21,14 +23,17 @@ const Popup = () => {
   }, []);
 
   const renderCopiedItem = ({ id, text, website }: ClipboardItem) => (
-    <div key={id} className="clipboard-entry">
-      <div className="clipboard-entry-content">
+    <div
+      key={id}
+      className="clipboard-entry my-2 mx-2.5 flex justify-between items-center"
+    >
+      <div className="clipboard-entry-content flex items-center">
         <img
           src={website?.favicon}
           alt={website?.name}
-          className="clipboard-entry-icon"
+          className="clipboard-entry-icon mr-2.5 h-4 w-4"
         />
-        <p className="clipboard-entry-text">{text}</p>
+        <p className="clipboard-entry-text font-semibold">{text}</p>
       </div>
     </div>
   );
@@ -60,7 +65,7 @@ const Popup = () => {
     const itemsToDisplay = clipboardItems.slice(0, MAX_ITEMS_TO_SHOW);
 
     return (
-      <div className="clipboard-list">
+      <div className="clipboard-list h-auto">
         {itemsToDisplay.map((item) => {
           const dateLabel = renderDateSeparator(item.timestamp);
           const showDateSeparator = dateLabel !== currentDateLabel;
@@ -70,7 +75,9 @@ const Popup = () => {
 
             return (
               <React.Fragment key={item.id}>
-                <div className="clipboard-date-separator">{dateLabel}</div>
+                <div className="clipboard-date-separator bg-[#f7f7f7] text-center py-1 px-0 text-[#b7b7b7] text-[10px] tracking-wider">
+                  {dateLabel}
+                </div>
                 {renderCopiedItem(item)}
               </React.Fragment>
             );
@@ -83,8 +90,10 @@ const Popup = () => {
   };
 
   return (
-    <div className="clipboard-popup-container">
-      <h1 className="clipboard-popup-header">ClipBoard+</h1>
+    <div className="clipboard-popup-container flex flex-col justify-center">
+      <h1 className="clipboard-popup-header m-0 py-3.5 px-5 text-base text-center text-white tracking-widest">
+        ClipBoard+
+      </h1>
       {renderCopiedItemsList()}
     </div>
   );

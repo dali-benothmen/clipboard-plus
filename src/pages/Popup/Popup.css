@@ -1,38 +1,12 @@
-.popup-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.copied-items-list {
-  height: auto;
-}
-
-.copied-item {
-  margin: 2px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.copied-text {
-  font-weight: 600;
-}
-
-.copied-text:before {
+.clipboard-entry-text:before {
   content: '\201C';
 }
 
-.copied-text:after {
+.clipboard-entry-text:after {
   content: '\201D';
 }
 
-.copied-item-wrapper {
-  display: flex;
-  align-items: center;
-}
-
-.popup-header {
+.clipboard-popup-header {
   background-image: linear-gradient(
     to right top,
     #6403cf,
@@ -41,16 +15,4 @@
     #666bf6,
     #6d81ff
   );
-  margin: 0;
-  padding: 14px 20px;
-  font-size: 16px;
-  text-align: center;
-  color: #fff;
-  letter-spacing: 1px;
-}
-
-.favicon {
-  margin-right: 10px;
-  height: 16px;
-  width: 16px;
 }
