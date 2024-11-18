@@ -1,7 +1,6 @@
 import { uuid } from '../../utils/uuid';
 
 const DEFAULT_LIMIT_ITEMS = 100;
-const DEFAULT_EXPIRATION_DATE = 30;
 
 document.addEventListener('copy', () => {
   try {
@@ -14,16 +13,10 @@ document.addEventListener('copy', () => {
         document.querySelector("link[rel~='icon']")?.href ||
         `${window.location.origin}/favicon.ico`;
 
-      const expirationDate = new Date();
-      expirationDate.setDate(
-        expirationDate.getDate() + DEFAULT_EXPIRATION_DATE
-      );
-
       const newCopiedItem = {
         id: uuid(),
         text: copiedText,
         timestamp: new Date().toISOString(),
-        expirationDate,
         website: {
           url,
           name,
@@ -34,12 +27,7 @@ document.addEventListener('copy', () => {
       chrome.storage.local.get('clipboardHistory', (result) => {
         let clipboardHistory = result.clipboardHistory || [];
 
-        // Filter out expired items (older than 30 days)
-        const now = new Date();
-
-        clipboardHistory = clipboardHistory.filter((item) => {
-          return new Date(item.expirationDate) > now;
-        });
+        clipboardHistory.unshift(newCopiedItem);
 
         if (clipboardHistory.length > DEFAULT_LIMIT_ITEMS) {
           chrome.runtime.sendMessage({
@@ -50,8 +38,6 @@ document.addEventListener('copy', () => {
 
           return;
         }
-
-        clipboardHistory.unshift(newCopiedItem);
 
         chrome.storage.local.set({ clipboardHistory });
       });
