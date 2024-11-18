@@ -31,17 +31,17 @@ document.addEventListener('copy', () => {
         },
       };
 
-      chrome.storage.local.get('copiedHistory', (result) => {
-        let copiedHistory = result.copiedHistory || [];
+      chrome.storage.local.get('clipboardHistory', (result) => {
+        let clipboardHistory = result.clipboardHistory || [];
 
         // Filter out expired items (older than 30 days)
         const now = new Date();
 
-        copiedHistory = copiedHistory.filter((item) => {
+        clipboardHistory = clipboardHistory.filter((item) => {
           return new Date(item.expirationDate) > now;
         });
 
-        if (copiedHistory.length > DEFAULT_LIMIT_ITEMS) {
+        if (clipboardHistory.length > DEFAULT_LIMIT_ITEMS) {
           chrome.runtime.sendMessage({
             type: 'showNotification',
             message:
@@ -51,9 +51,9 @@ document.addEventListener('copy', () => {
           return;
         }
 
-        copiedHistory.unshift(newCopiedItem);
+        clipboardHistory.unshift(newCopiedItem);
 
-        chrome.storage.local.set({ copiedHistory });
+        chrome.storage.local.set({ clipboardHistory });
       });
     }
   } catch (error) {}
