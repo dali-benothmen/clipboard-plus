@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ClipboardItem } from '../../types';
+import { truncateText } from '../../utils/truncateText';
 
 import './Popup.css';
 
@@ -33,7 +34,9 @@ const Popup = () => {
           alt={website?.name}
           className="clipboard-entry-icon mr-2.5 h-4 w-4"
         />
-        <p className="clipboard-entry-text font-semibold">{text}</p>
+        <p className="clipboard-entry-text font-semibold">
+          {truncateText(text)}
+        </p>
       </div>
     </div>
   );
