@@ -15,7 +15,8 @@
     {
       "matches": ["http://*/*", "https://*/*"],
       "js": ["contentScript.bundle.js"],
-      "css": ["content.styles.css"]
+      "css": ["content.styles.css"],
+      "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
