@@ -2,7 +2,7 @@ export interface ClipboardItem {
   id: string;
   text: string;
   timestamp: string;
-  expirationDate: string;
+  pinned: boolean;
   website: WebsiteInfo;
 }
 

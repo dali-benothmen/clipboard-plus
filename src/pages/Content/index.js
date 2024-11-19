@@ -17,6 +17,7 @@ document.addEventListener('copy', () => {
         id: uuid(),
         text: copiedText,
         timestamp: new Date().toISOString(),
+        pinned: false,
         website: {
           url,
           name,
