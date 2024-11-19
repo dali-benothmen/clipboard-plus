@@ -1,14 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Dropdown } from 'antd';
 
+import ClipboardEntryActions from './components/ClipboardEntryActions';
+import Divider from './components/Divider';
 import { ClipboardItem } from '../../types';
 import { truncateText } from '../../utils/truncateText';
-import {
-  BookmarkIcon,
-  BookmarkSlashIcon,
-  DocumentDuplicateIcon,
-  EllipsisVerticalIcon,
-} from '../../assets/icons';
 
 import './Popup.css';
 
@@ -71,45 +66,6 @@ const Popup = () => {
     });
   };
 
-  const ClipboardEntryActions = ({
-    onPin,
-    onCopy,
-    onDelete,
-    isPinned,
-  }: {
-    onPin: () => void;
-    onCopy: () => void;
-    onDelete: () => void;
-    isPinned: boolean;
-  }) => (
-    <div className="clipboard-entry-actions w-[70px] flex justify-between">
-      <button onClick={onCopy}>
-        <DocumentDuplicateIcon />
-      </button>
-      <button onClick={onPin}>
-        {isPinned ? <BookmarkSlashIcon /> : <BookmarkIcon />}
-      </button>
-      <Dropdown
-        menu={{
-          items: [
-            { label: 'Copy', key: '0', onClick: onCopy },
-            {
-              label: 'Delete',
-              key: '1',
-              danger: true,
-              onClick: onDelete,
-            },
-          ],
-        }}
-        trigger={['click']}
-      >
-        <button>
-          <EllipsisVerticalIcon />
-        </button>
-      </Dropdown>
-    </div>
-  );
-
   const ClipboardEntry = ({ id, text, pinned, website }: ClipboardItem) => (
     <div
       key={id}
@@ -152,18 +108,12 @@ const Popup = () => {
     return itemDateObj.toLocaleDateString();
   };
 
-  const LineSeperator = ({ text }: { text: string }) => (
-    <div className="clipboard-line-separator bg-[#f7f7f7] text-center py-1 px-0 text-[#b7b7b7] text-[10px] tracking-wider">
-      {text}
-    </div>
-  );
-
   const renderPinnedItems = () => {
     const itemsToDisplay = pinnedItems.slice(0, MAX_ITEMS_TO_SHOW);
 
     return (
       <>
-        <LineSeperator text={'PINNED'} />
+        <Divider text={'PINNED'} />
         {itemsToDisplay.map((item) => {
           return (
             <React.Fragment key={item.id}>
@@ -197,7 +147,7 @@ const Popup = () => {
 
             return (
               <React.Fragment key={item.id}>
-                <LineSeperator text={dateLabel} />
+                <Divider text={dateLabel} />
                 <ClipboardEntry {...item} />
               </React.Fragment>
             );
