@@ -170,7 +170,12 @@ const Popup = () => {
       </div>
 
       {clipboardItems.length > MAX_ITEMS_TO_SHOW && (
-        <button className="see-more-btn m-[15px] h-[29px] w-[50%] self-center text-white font-semibold border-none rounded-full cursor-pointer">
+        <button
+          onClick={() => {
+            chrome.runtime.openOptionsPage();
+          }}
+          className="see-more-btn m-[15px] h-[29px] w-[50%] self-center text-white font-semibold border-none rounded-full cursor-pointer"
+        >
           See More
         </button>
       )}

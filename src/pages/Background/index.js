@@ -11,14 +11,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: 'customOptions',
+    id: 'dashboard',
     title: 'Dashboard',
     contexts: ['action'],
   });
 });
 
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === 'customOptions') {
+chrome.contextMenus.onClicked.addListener((info, _) => {
+  if (info.menuItemId === 'dashboard') {
     chrome.runtime.openOptionsPage();
   }
 });
