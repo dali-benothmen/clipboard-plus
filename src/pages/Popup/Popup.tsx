@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
-import ClipboardEntryActions from './components/ClipboardEntryActions';
+import ClipboardEntry from './components/ClipboardEntry';
 import Divider from './components/Divider';
 import { ClipboardItem } from '../../types';
-import { truncateText } from '../../utils/truncateText';
 
 import './Popup.css';
 
@@ -66,30 +65,6 @@ const Popup = () => {
     });
   };
 
-  const ClipboardEntry = ({ id, text, pinned, website }: ClipboardItem) => (
-    <div
-      key={id}
-      className="clipboard-entry my-4 mx-2.5 flex justify-between items-center"
-    >
-      <div className="clipboard-entry-content flex items-center">
-        <img
-          src={website?.favicon}
-          alt={website?.name}
-          className="clipboard-entry-icon mr-2.5 h-4 w-4"
-        />
-        <p className="clipboard-entry-text font-semibold text-[#4448ff]">
-          {truncateText(text)}
-        </p>
-      </div>
-      <ClipboardEntryActions
-        onPin={() => handlePinItem(id)}
-        onCopy={() => handleCopy(text)}
-        onDelete={() => handleDelete(id)}
-        isPinned={pinned}
-      />
-    </div>
-  );
-
   const renderDateSeparator = (itemDate: string) => {
     const now = new Date();
     const itemDateObj = new Date(itemDate);
@@ -117,7 +92,12 @@ const Popup = () => {
         {itemsToDisplay.map((item) => {
           return (
             <React.Fragment key={item.id}>
-              <ClipboardEntry {...item} />
+              <ClipboardEntry
+                clipboardItem={item}
+                onPin={() => handlePinItem(item.id)}
+                onCopy={() => handleCopy(item.text)}
+                onDelete={() => handleDelete(item.id)}
+              />
             </React.Fragment>
           );
         })}
@@ -148,12 +128,25 @@ const Popup = () => {
             return (
               <React.Fragment key={item.id}>
                 <Divider text={dateLabel} />
-                <ClipboardEntry {...item} />
+                <ClipboardEntry
+                  clipboardItem={item}
+                  onPin={() => handlePinItem(item.id)}
+                  onCopy={() => handleCopy(item.text)}
+                  onDelete={() => handleDelete(item.id)}
+                />
               </React.Fragment>
             );
           }
 
-          return <ClipboardEntry key={item.id} {...item} />;
+          return (
+            <ClipboardEntry
+              key={item.id}
+              clipboardItem={item}
+              onPin={() => handlePinItem(item.id)}
+              onCopy={() => handleCopy(item.text)}
+              onDelete={() => handleDelete(item.id)}
+            />
+          );
         })}
       </>
     );
