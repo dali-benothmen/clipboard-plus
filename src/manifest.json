@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "clipboard-plus",
   "description": "Smart and intuitive Chrome extension that helps you manage and organize your clipboard history with ease.",
-  "options_page": "options.html",
+  "options_page": "app.html",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
     "default_popup": "popup.html",
@@ -25,5 +25,5 @@
       "matches": []
     }
   ],
-  "permissions": ["notifications", "storage", "tabs"]
+  "permissions": ["notifications", "storage", "tabs", "contextMenus"]
 }
