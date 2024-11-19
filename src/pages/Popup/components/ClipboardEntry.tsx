@@ -8,11 +8,12 @@ interface ClipboardEntryProps {
   onPin: (id: string) => void;
   onCopy: (text: string) => void;
   onDelete: (id: string) => void;
+  onSetLabel: (item: ClipboardItem) => void;
 }
 
 const ClipboardEntry: React.FC<ClipboardEntryProps> = (props) => {
-  const { clipboardItem, onCopy, onPin, onDelete } = props;
-  const { id, text, pinned, website } = clipboardItem;
+  const { clipboardItem, onCopy, onPin, onDelete, onSetLabel } = props;
+  const { id, text, label, pinned, website } = clipboardItem;
 
   const [isCoping, setIsCoping] = useState(false);
 
@@ -32,7 +33,7 @@ const ClipboardEntry: React.FC<ClipboardEntryProps> = (props) => {
             isCoping ? 'text-green-400' : ''
           }`}
         >
-          {truncateText(text)}
+          {truncateText(label, 30)}
         </p>
       </div>
       <ClipboardEntryActions
@@ -47,6 +48,7 @@ const ClipboardEntry: React.FC<ClipboardEntryProps> = (props) => {
           }, 100);
         }}
         onDelete={() => onDelete(id)}
+        onSetLabel={() => onSetLabel(clipboardItem)}
         isPinned={pinned}
       />
     </div>

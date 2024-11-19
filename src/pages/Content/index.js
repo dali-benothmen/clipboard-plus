@@ -16,6 +16,7 @@ document.addEventListener('copy', () => {
       const newCopiedItem = {
         id: uuid(),
         text: copiedText,
+        label: copiedText,
         timestamp: new Date().toISOString(),
         pinned: false,
         website: {

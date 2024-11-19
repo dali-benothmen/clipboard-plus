@@ -17,3 +17,12 @@
     #6d81ff
   );
 }
+
+.ant-modal-wrap {
+  top: -20% !important;
+}
+
+.ant-modal-content {
+  padding: 15px 20px !important;
+  margin-bottom: 8px;
+}

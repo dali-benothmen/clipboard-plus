@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Input, Modal } from 'antd';
 
 import ClipboardEntry from './components/ClipboardEntry';
 import Divider from './components/Divider';
@@ -15,6 +16,9 @@ const filterUnpinnedItems = (items: ClipboardItem[]) =>
 
 const Popup = () => {
   const [clipboardItems, setClipboardItems] = useState<ClipboardItem[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ClipboardItem | null>(null);
+  const [label, setLabel] = useState('');
 
   const pinnedItems = useMemo(
     () => filterPinnedItems(clipboardItems),
@@ -65,6 +69,38 @@ const Popup = () => {
     });
   };
 
+  const handleSetLabel = (item: ClipboardItem) => {
+    setSelectedItem(item);
+    setLabel(item.label);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+    setLabel('');
+  };
+
+  const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLabel(e.target.value);
+  };
+
+  const handleSaveLabel = () => {
+    if (selectedItem) {
+      const updatedItem = { ...selectedItem, label };
+      chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+        const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
+          item.id === selectedItem.id ? updatedItem : item
+        );
+
+        chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+          setClipboardItems(updatedItems);
+          handleModalClose();
+        });
+      });
+    }
+  };
+
   const renderDateSeparator = (itemDate: string) => {
     const now = new Date();
     const itemDateObj = new Date(itemDate);
@@ -97,6 +133,7 @@ const Popup = () => {
                 onPin={() => handlePinItem(item.id)}
                 onCopy={() => handleCopy(item.text)}
                 onDelete={() => handleDelete(item.id)}
+                onSetLabel={() => handleSetLabel(item)}
               />
             </React.Fragment>
           );
@@ -133,6 +170,7 @@ const Popup = () => {
                   onPin={() => handlePinItem(item.id)}
                   onCopy={() => handleCopy(item.text)}
                   onDelete={() => handleDelete(item.id)}
+                  onSetLabel={() => handleSetLabel(item)}
                 />
               </React.Fragment>
             );
@@ -145,6 +183,7 @@ const Popup = () => {
               onPin={() => handlePinItem(item.id)}
               onCopy={() => handleCopy(item.text)}
               onDelete={() => handleDelete(item.id)}
+              onSetLabel={() => handleSetLabel(item)}
             />
           );
         })}
@@ -161,7 +200,21 @@ const Popup = () => {
         {pinnedItems.length > 0 ? renderPinnedItems() : null}
         {renderUnpinnedItems()}
       </div>
-
+      <Modal
+        title="Set Label"
+        open={isModalOpen}
+        onOk={handleSaveLabel}
+        onCancel={handleModalClose}
+      >
+        <p className="text-[14px] mb-1.5">
+          Label your clipboard items for easier organization and quick access.
+        </p>
+        <Input
+          value={label}
+          onChange={handleLabelChange}
+          placeholder="Enter a new label"
+        />
+      </Modal>
       {clipboardItems.length > MAX_ITEMS_TO_SHOW && (
         <button
           onClick={() => {
