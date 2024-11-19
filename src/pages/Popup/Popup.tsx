@@ -43,6 +43,22 @@ const Popup = () => {
     fetchClipboardHistory();
   }, []);
 
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  const handleDelete = (id: string) => {
+    chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+      const updatedItems = clipboardHistory.filter(
+        (item: ClipboardItem) => item.id !== id
+      );
+
+      chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+        setClipboardItems(updatedItems);
+      });
+    });
+  };
+
   const handlePinItem = (id: string) => {
     chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
       const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
@@ -94,34 +110,29 @@ const Popup = () => {
     </div>
   );
 
-  const ClipboardEntry = ({ id, text, pinned, website }: ClipboardItem) => {
-    const handleCopy = () => console.log('Item Copied');
-    const handleDelete = () => console.log('Item deleted');
-
-    return (
-      <div
-        key={id}
-        className="clipboard-entry my-4 mx-2.5 flex justify-between items-center"
-      >
-        <div className="clipboard-entry-content flex items-center">
-          <img
-            src={website?.favicon}
-            alt={website?.name}
-            className="clipboard-entry-icon mr-2.5 h-4 w-4"
-          />
-          <p className="clipboard-entry-text font-semibold text-[#4448ff]">
-            {truncateText(text)}
-          </p>
-        </div>
-        <ClipboardEntryActions
-          onPin={() => handlePinItem(id)}
-          onCopy={handleCopy}
-          onDelete={handleDelete}
-          isPinned={pinned}
+  const ClipboardEntry = ({ id, text, pinned, website }: ClipboardItem) => (
+    <div
+      key={id}
+      className="clipboard-entry my-4 mx-2.5 flex justify-between items-center"
+    >
+      <div className="clipboard-entry-content flex items-center">
+        <img
+          src={website?.favicon}
+          alt={website?.name}
+          className="clipboard-entry-icon mr-2.5 h-4 w-4"
         />
+        <p className="clipboard-entry-text font-semibold text-[#4448ff]">
+          {truncateText(text)}
+        </p>
       </div>
-    );
-  };
+      <ClipboardEntryActions
+        onPin={() => handlePinItem(id)}
+        onCopy={() => handleCopy(text)}
+        onDelete={() => handleDelete(id)}
+        isPinned={pinned}
+      />
+    </div>
+  );
 
   const renderDateSeparator = (itemDate: string) => {
     const now = new Date();
