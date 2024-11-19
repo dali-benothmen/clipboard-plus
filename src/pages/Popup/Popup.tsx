@@ -206,7 +206,7 @@ const Popup = () => {
         onOk={handleSaveLabel}
         onCancel={handleModalClose}
       >
-        <p className="text-[14px] mb-1.5">
+        <p className="text-[13px] mb-1.5">
           Label your clipboard items for easier organization and quick access.
         </p>
         <Input
