@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Dropdown } from 'antd';
+
 import { ClipboardItem } from '../../types';
 import { truncateText } from '../../utils/truncateText';
+import {
+  BookmarkIcon,
+  DocumentDuplicateIcon,
+  EllipsisVerticalIcon,
+} from '../../assets/icons';
 
 import './Popup.css';
 
@@ -8,8 +15,6 @@ const MAX_ITEMS_TO_SHOW = 10;
 
 const Popup = () => {
   const [clipboardItems, setClipboardItems] = useState<ClipboardItem[]>([]);
-
-  console.log({ clipboardItems });
 
   useEffect(() => {
     const fetchClipboardHistory = () => {
@@ -26,7 +31,7 @@ const Popup = () => {
   const renderCopiedItem = ({ id, text, website }: ClipboardItem) => (
     <div
       key={id}
-      className="clipboard-entry my-2 mx-2.5 flex justify-between items-center"
+      className="clipboard-entry my-4 mx-2.5 flex justify-between items-center"
     >
       <div className="clipboard-entry-content flex items-center">
         <img
@@ -34,9 +39,39 @@ const Popup = () => {
           alt={website?.name}
           className="clipboard-entry-icon mr-2.5 h-4 w-4"
         />
-        <p className="clipboard-entry-text font-semibold">
+        <p className="clipboard-entry-text font-semibold text-[#4448ff]">
           {truncateText(text)}
         </p>
+      </div>
+      <div className="clipboard-entry-actions w-[70px] flex justify-between">
+        <button onClick={() => console.log('copied')}>
+          <DocumentDuplicateIcon />
+        </button>
+        <button onClick={() => console.log('bookmarked')}>
+          <BookmarkIcon />
+        </button>
+        <Dropdown
+          menu={{
+            items: [
+              {
+                label: 'Copy',
+                key: '0',
+                onClick: () => console.log('Copied from dropdown'),
+              },
+              {
+                label: 'Delete',
+                key: '1',
+                danger: true,
+                onClick: () => console.log('Deleted'),
+              },
+            ],
+          }}
+          trigger={['click']}
+        >
+          <button>
+            <EllipsisVerticalIcon />
+          </button>
+        </Dropdown>
       </div>
     </div>
   );
