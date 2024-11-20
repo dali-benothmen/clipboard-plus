@@ -16,7 +16,7 @@ export function saveCopiedItem(
     label: copiedText,
     timestamp: new Date().toISOString(),
     pinned: false,
-    website: {
+    source: {
       url,
       name,
       favicon,

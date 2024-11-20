@@ -4,10 +4,10 @@ export interface ClipboardItem {
   label: string;
   timestamp: string;
   pinned: boolean;
-  website: WebsiteInfo;
+  source: Source;
 }
 
-export interface WebsiteInfo {
+export interface Source {
   name: string;
   url: string;
   favicon: string;

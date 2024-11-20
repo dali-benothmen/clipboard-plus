@@ -13,7 +13,7 @@ interface ClipboardEntryProps {
 
 const ClipboardEntry: React.FC<ClipboardEntryProps> = (props) => {
   const { clipboardItem, onCopy, onPin, onDelete, onSetLabel } = props;
-  const { id, text, label, pinned, website } = clipboardItem;
+  const { id, text, label, pinned, source } = clipboardItem;
 
   const [isCoping, setIsCoping] = useState(false);
 
@@ -24,8 +24,8 @@ const ClipboardEntry: React.FC<ClipboardEntryProps> = (props) => {
     >
       <div className="clipboard-entry-content flex items-center">
         <img
-          src={website?.favicon}
-          alt={website?.name}
+          src={source?.favicon}
+          alt={source?.name}
           className="clipboard-entry-icon mr-2.5 h-4 w-4"
         />
         <p
