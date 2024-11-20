@@ -144,7 +144,11 @@ const Popup = () => {
 
   const renderUnpinnedItems = () => {
     if (clipboardItems.length === 0) {
-      return <p className="clipboard-empty-message">No copied items</p>;
+      return (
+        <p className="clipboard-empty-message text-[22px] text-center text-[#a9a9a9] relative top-[90px]">
+          Clipboard history is empty
+        </p>
+      );
     }
 
     let currentDateLabel = '';
