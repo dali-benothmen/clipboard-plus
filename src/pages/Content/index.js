@@ -1,48 +1,16 @@
-import { uuid } from '../../utils/uuid';
+import { handleCopyEvent } from '../../utils/storageUtils';
 
-const DEFAULT_LIMIT_ITEMS = 100;
-
-document.addEventListener('copy', () => {
-  try {
+document.addEventListener('copy', (event) => {
+  const getCopiedData = () => {
     const copiedText = document.getSelection().toString();
+    const url = window.location.href;
+    const name = document.title || url;
+    const favicon =
+      document.querySelector("link[rel~='icon']")?.href ||
+      `${window.location.origin}/favicon.ico`;
 
-    if (copiedText) {
-      const url = window.location.href;
-      const name = document.title || url;
-      const favicon =
-        document.querySelector("link[rel~='icon']")?.href ||
-        `${window.location.origin}/favicon.ico`;
+    return { copiedText, url, name, favicon };
+  };
 
-      const newCopiedItem = {
-        id: uuid(),
-        text: copiedText,
-        label: copiedText,
-        timestamp: new Date().toISOString(),
-        pinned: false,
-        website: {
-          url,
-          name,
-          favicon,
-        },
-      };
-
-      chrome.storage.local.get('clipboardHistory', (result) => {
-        let clipboardHistory = result.clipboardHistory || [];
-
-        clipboardHistory.unshift(newCopiedItem);
-
-        if (clipboardHistory.length > DEFAULT_LIMIT_ITEMS) {
-          chrome.runtime.sendMessage({
-            type: 'showNotification',
-            message:
-              'You have reached the maximum number of saved copied items.',
-          });
-
-          return;
-        }
-
-        chrome.storage.local.set({ clipboardHistory });
-      });
-    }
-  } catch (error) {}
+  handleCopyEvent(event, getCopiedData);
 });

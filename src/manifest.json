@@ -25,5 +25,11 @@
       "matches": []
     }
   ],
-  "permissions": ["notifications", "storage", "tabs", "contextMenus"]
+  "permissions": [
+    "notifications",
+    "storage",
+    "tabs",
+    "contextMenus",
+    "activeTab"
+  ]
 }
