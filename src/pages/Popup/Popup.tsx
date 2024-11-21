@@ -6,6 +6,7 @@ import Divider from './components/Divider';
 import { ClipboardItem } from '../../types';
 
 import './Popup.css';
+import { Logo } from '../../assets/Logo';
 
 const MAX_ITEMS_TO_SHOW = 10;
 
@@ -145,7 +146,7 @@ const Popup = () => {
   const renderUnpinnedItems = () => {
     if (clipboardItems.length === 0) {
       return (
-        <p className="clipboard-empty-message text-[22px] text-center text-[#a9a9a9] relative top-[90px]">
+        <p className="clipboard-empty-message text-[22px] text-center text-[#a9a9a9] relative top-[80px]">
           Clipboard history is empty
         </p>
       );
@@ -197,9 +198,9 @@ const Popup = () => {
 
   return (
     <div className="clipboard-popup-container flex flex-col justify-center">
-      <h1 className="clipboard-popup-header m-0 py-3.5 px-5 text-base text-center text-white font-bold tracking-widest">
-        ClipBoard+
-      </h1>
+      <div className="clipboard-popup-header m-0 py-3.5 px-5 flex justify-center align-center">
+        <Logo showCompanyName style={{ width: 155, height: 40 }} />
+      </div>
       <div className="clipboard-list h-auto">
         {pinnedItems.length > 0 ? renderPinnedItems() : null}
         {renderUnpinnedItems()}

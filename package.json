@@ -1,12 +1,12 @@
 {
-  "name": "ClipBoard-Plus",
+  "name": "WiseCopy",
   "version": "5.0.4",
   "description": "Smart and intuitive Chrome extension that helps you manage and organize your clipboard history with ease.",
   "license": "MIT",
   "author": "Mohamed Ali Ben Othmen",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dali-benothmen/clipboard-plus.git"
+    "url": "https://github.com/dali-benothmen/wisecopy.git"
   },
   "scripts": {
     "build": "rm -rf ./build && node config/build.js",

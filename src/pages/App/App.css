@@ -6,3 +6,34 @@
   align-items: center;
   justify-content: center;
 }
+
+.ant-layout {
+  height: 100vh;
+}
+
+.clipboard-manager-sider {
+  flex: 0 0 55px !important;
+  max-width: 55px !important;
+  min-width: 55px !important;
+  width: 55px !important;
+}
+
+.ant-layout-sider-children,
+.clipboard-manager-sider-menu {
+  background-image: linear-gradient(
+    to right top,
+    #6403cf,
+    #6237de,
+    #6253eb,
+    #666bf6,
+    #6d81ff
+  );
+}
+.ant-menu-item-selected {
+  background-color: rgb(64, 5, 163, 0.5) !important;
+}
+
+.demo-logo-vertical {
+  height: 60px;
+  margin: 16px 10px 16px;
+}

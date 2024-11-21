@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "clipboard-plus",
+  "name": "WiseCopy",
   "description": "Smart and intuitive Chrome extension that helps you manage and organize your clipboard history with ease.",
   "options_page": "app.html",
   "background": { "service_worker": "background.bundle.js" },
