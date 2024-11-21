@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Input, Modal } from 'antd';
+import { Input, Modal, Empty, Typography } from 'antd';
 
 import ClipboardEntry from './components/ClipboardEntry';
 import Divider from './components/Divider';
@@ -146,9 +146,13 @@ const Popup = () => {
   const renderUnpinnedItems = () => {
     if (clipboardItems.length === 0) {
       return (
-        <p className="clipboard-empty-message text-[22px] text-center text-[#a9a9a9] relative top-[80px]">
-          Clipboard history is empty
-        </p>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <Typography.Text>Clipboard history is empty</Typography.Text>
+          }
+          style={{ marginBlock: 50 }}
+        />
       );
     }
 

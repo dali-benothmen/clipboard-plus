@@ -37,3 +37,17 @@
   height: 60px;
   margin: 16px 10px 16px;
 }
+
+.app-header {
+  background: #fff;
+  height: 65px !important;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.scene-name {
+  font-size: 30px !important;
+  margin: 0 !important;
+  width: 180px !important;
+}
