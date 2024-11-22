@@ -18,7 +18,7 @@ function formatTimeFromISO(isoDate: string) {
   return dateObj.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: true, // 12-hour format with AM/PM
+    hour12: true,
   });
 }
 
