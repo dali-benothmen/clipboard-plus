@@ -10,7 +10,8 @@ export interface ClipboardItem {
 
 export interface Source {
   name: string;
-  url: string;
+  hostname: string;
+  href: string;
   favicon: string;
 }
 
