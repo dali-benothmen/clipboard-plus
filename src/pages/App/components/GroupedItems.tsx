@@ -1,5 +1,15 @@
 import React from 'react';
-import { Avatar, Button, Checkbox, Empty, List, Space, Typography } from 'antd';
+import {
+  Avatar,
+  Button,
+  Checkbox,
+  Empty,
+  List,
+  Space,
+  Typography,
+  Dropdown,
+  message,
+} from 'antd';
 import { PushpinOutlined, CopyOutlined, MoreOutlined } from '@ant-design/icons';
 import { ClipboardItem } from '../../../types';
 
@@ -37,6 +47,15 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
   groupedItems,
   groupName,
 }) => {
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const success = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Item copied',
+    });
+  };
+
   if (Object.keys(groupedItems).length === 0) {
     return (
       <Empty
@@ -63,6 +82,7 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
 
   return (
     <div>
+      {contextHolder}
       {Object.entries(groupedItems).map(([key, items]) => {
         const formattedKey =
           groupName === 'date' ? formatDateFromISO(key) : key;
@@ -85,16 +105,47 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                       style={{ fontSize: 16, cursor: 'pointer' }}
                     />,
                     <CopyOutlined
+                      onClick={success}
                       style={{ fontSize: 16, cursor: 'pointer' }}
                     />,
-                    <MoreOutlined
-                      style={{ fontSize: 16, cursor: 'pointer' }}
-                    />,
+
+                    <Dropdown
+                      menu={{
+                        items: [
+                          {
+                            label: 'View Details',
+                            key: '0',
+                            onClick: () => console.log('view details'),
+                          },
+                          {
+                            label: 'Edit Label',
+                            key: '1',
+                            onClick: () => console.log('edit label'),
+                          },
+                          {
+                            label: 'Assign Shortcut Key',
+                            key: '2',
+                            onClick: () => console.log('Assign Shortcut Key'),
+                          },
+                          {
+                            label: 'Move to trash',
+                            key: '3',
+                            danger: true,
+                            onClick: () => console.log('delete'),
+                          },
+                        ],
+                      }}
+                      trigger={['click']}
+                    >
+                      <MoreOutlined
+                        style={{ fontSize: 16, cursor: 'pointer' }}
+                      />
+                    </Dropdown>,
                   ]}
                 >
                   <Space>
                     <Checkbox />
-                    <Typography.Text style={{ color: 'gray', fontSize: 13 }}>
+                    <Typography.Text type="secondary" style={{ fontSize: 13 }}>
                       {formatTimeFromISO(item.timestamp)}
                     </Typography.Text>
                     <div
@@ -113,7 +164,8 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                       </Typography.Text>
                       <span> - </span>
                       <Typography.Text
-                        style={{ margin: '0 7px', color: 'gray', fontSize: 13 }}
+                        type="secondary"
+                        style={{ margin: '0 7px', fontSize: 13 }}
                       >
                         {item.source.name}
                       </Typography.Text>
