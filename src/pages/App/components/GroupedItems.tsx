@@ -12,6 +12,8 @@ import {
 } from 'antd';
 import { PushpinOutlined, CopyOutlined, MoreOutlined } from '@ant-design/icons';
 import { ClipboardItem } from '../../../types';
+import { truncateText } from '../../../utils/truncateText';
+import { useAppContext } from '../hooks/useAppContext';
 
 export interface GroupedItemsType {
   [key: string]: ClipboardItem[];
@@ -48,6 +50,17 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
   groupName,
 }) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const { checkedItems, setCheckedItems } = useAppContext();
+
+  const handleCheck = (id: string) => {
+    setCheckedItems((prevState) => {
+      if (prevState.includes(id)) {
+        return prevState.filter((itemId) => itemId !== id);
+      } else {
+        return [...prevState, id];
+      }
+    });
+  };
 
   const success = () => {
     messageApi.open({
@@ -144,7 +157,10 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                   ]}
                 >
                   <Space>
-                    <Checkbox />
+                    <Checkbox
+                      checked={checkedItems.includes(item.id)}
+                      onChange={() => handleCheck(item.id)}
+                    />
                     <Typography.Text type="secondary" style={{ fontSize: 13 }}>
                       {formatTimeFromISO(item.timestamp)}
                     </Typography.Text>
@@ -160,14 +176,14 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                       <Typography.Text
                         style={{ margin: '0 7px', fontSize: 13 }}
                       >
-                        {item.label}
+                        {truncateText(item.label, 40)}
                       </Typography.Text>
                       <span> - </span>
                       <Typography.Text
                         type="secondary"
                         style={{ margin: '0 7px', fontSize: 13 }}
                       >
-                        {item.source.name}
+                        {truncateText(item.source.name, 40)}
                       </Typography.Text>
                     </div>
                   </Space>

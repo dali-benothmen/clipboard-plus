@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Layout, Input, theme } from 'antd';
 import type { GetProps } from 'antd';
 
 import SidebarMenu from './components/SidebarMenu';
 import Header from './components/Header';
-import AppScene, { Scene, Scenes } from './scenes';
+import AppScene from './scenes';
 
 import './App.css';
+import { useAppContext } from './hooks/useAppContext';
 
 type SearchProps = GetProps<typeof Input.Search>;
 
-const { Content } = Layout;
+const { Content, Header: SlideInToolbar } = Layout;
 
 const App: React.FC = () => {
-  const [scene, setScene] = useState<Scene>(Scenes.HISTORY);
+  const { checkedItems, scene, setScene } = useAppContext();
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -26,11 +27,18 @@ const App: React.FC = () => {
     <Layout>
       <SidebarMenu onSceneChange={setScene} />
       <Layout>
-        <Header
-          scene={scene}
-          onSearch={onSearch}
-          onDeleteHistory={() => console.log('Deleted')}
-        />
+        {checkedItems.length > 0 ? (
+          <SlideInToolbar
+            className="app-header"
+            style={{ background: '#fff' }}
+          />
+        ) : (
+          <Header
+            scene={scene}
+            onSearch={onSearch}
+            onDeleteHistory={() => console.log('Deleted')}
+          />
+        )}
         <Content
           style={{
             margin: '24px 90px',

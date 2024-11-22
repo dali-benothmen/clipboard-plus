@@ -56,8 +56,6 @@ const History = () => {
           setClipboardItems(clipboardHistory);
         }
       });
-
-      console.log('Ftech Clipboard History');
     };
 
     fetchClipboardHistory();
