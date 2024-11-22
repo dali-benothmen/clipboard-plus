@@ -1,5 +1,5 @@
 import React from 'react';
-import { Empty, List, Typography } from 'antd';
+import { Button, Empty, List, Typography } from 'antd';
 import { PushpinOutlined, CopyOutlined, MoreOutlined } from '@ant-design/icons';
 import { ClipboardItem } from '../../../types';
 
@@ -21,7 +21,19 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
         description={
-          <Typography.Text>Clipboard history is empty</Typography.Text>
+          groupName === 'date' ? (
+            <Typography.Text>Clipboard history is empty</Typography.Text>
+          ) : (
+            <>
+              <Typography.Text>
+                No categories available. Create a new category to organize your
+                clipboard items.
+              </Typography.Text>
+              <br />
+              <br />
+              <Button>Create now</Button>
+            </>
+          )
         }
         style={{ marginBlock: 50 }}
       />
