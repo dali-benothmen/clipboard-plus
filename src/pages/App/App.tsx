@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   HistoryOutlined,
   SettingOutlined,
   DeleteOutlined,
   LineChartOutlined,
+  BarsOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Input, theme, Typography, Button } from 'antd';
-import { Logo } from '../../assets/Logo';
+import { Layout, Menu, Input, theme, Typography, Button, Tabs } from 'antd';
 import type { GetProps } from 'antd';
+
+import GroupedItems, { GroupedItemsType } from './components/GroupedItems';
+import { Logo } from '../../assets/Logo';
+import { ClipboardItem } from '../../types';
 
 import './App.css';
 
@@ -25,12 +30,78 @@ type Scene = Scenes.HISTORY | Scenes.INSIGHTS | Scenes.TRASH | Scenes.SETTINGS;
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
 
+const groupItemsByDate = (items: ClipboardItem[]) => {
+  return items.reduce((acc, item) => {
+    const date = item.timestamp.split('T')[0];
+
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+
+    acc[date].push(item);
+
+    return acc;
+  }, {} as Record<string, ClipboardItem[]>);
+};
+
+const groupItemsByCategory = (items: ClipboardItem[]) => {
+  return items.reduce((acc, item) => {
+    const { category } = item;
+
+    if (category && category.name) {
+      const categoryName = category.name;
+
+      if (!acc[categoryName]) {
+        acc[categoryName] = [];
+      }
+
+      acc[categoryName].push(item);
+    }
+
+    return acc;
+  }, {} as Record<string, ClipboardItem[]>);
+};
+
 const App: React.FC = () => {
   const [scene, setScene] = useState<Scene>(Scenes.HISTORY);
+  const [clipboardItems, setClipboardItems] = useState<ClipboardItem[]>([]);
+
+  const groupedItemsByDate = useMemo(
+    () => groupItemsByDate(clipboardItems),
+    [clipboardItems]
+  );
+  const groupedItemsByCategory = useMemo(
+    () => groupItemsByCategory(clipboardItems),
+    [clipboardItems]
+  );
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  useEffect(() => {
+    const fetchClipboardHistory = () => {
+      chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+        if (clipboardHistory) {
+          setClipboardItems(clipboardHistory);
+        }
+      });
+    };
+
+    fetchClipboardHistory();
+  }, []);
+
+  const GroupedByDate: React.FC<{ groupedItems: GroupedItemsType }> = ({
+    groupedItems,
+  }) => {
+    return <GroupedItems groupedItems={groupedItems} groupName="date" />;
+  };
+
+  const GroupedByCategory: React.FC<{ groupedItems: GroupedItemsType }> = ({
+    groupedItems,
+  }) => {
+    return <GroupedItems groupedItems={groupedItems} groupName="category" />;
+  };
 
   const onSearch: SearchProps['onSearch'] = (value, _e, info) =>
     console.log('value', value);
@@ -95,14 +166,33 @@ const App: React.FC = () => {
         </Header>
         <Content
           style={{
-            margin: '24px 16px',
+            margin: '24px 90px',
             padding: 24,
             minHeight: 280,
+            overflowY: 'scroll',
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}
         >
-          Clipboard History
+          <Tabs
+            defaultActiveKey="2"
+            items={[
+              {
+                key: '1',
+                label: 'By date',
+                children: <GroupedByDate groupedItems={groupedItemsByDate} />,
+                icon: <BarsOutlined />,
+              },
+              {
+                key: '2',
+                label: 'By category',
+                children: (
+                  <GroupedByCategory groupedItems={groupedItemsByCategory} />
+                ),
+                icon: <AppstoreOutlined />,
+              },
+            ]}
+          />
         </Content>
       </Layout>
     </Layout>
