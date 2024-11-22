@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Empty, List, Typography } from 'antd';
+import { Avatar, Button, Checkbox, Empty, List, Space, Typography } from 'antd';
 import { PushpinOutlined, CopyOutlined, MoreOutlined } from '@ant-design/icons';
 import { ClipboardItem } from '../../../types';
 
@@ -10,6 +10,27 @@ export interface GroupedItemsType {
 interface GroupedItemsProps {
   groupedItems: GroupedItemsType;
   groupName: 'date' | 'category';
+}
+
+function formatTimeFromISO(isoDate: string) {
+  const dateObj = new Date(isoDate);
+
+  return dateObj.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true, // 12-hour format with AM/PM
+  });
+}
+
+function formatDateFromISO(isoDate: string) {
+  const dateObj = new Date(isoDate);
+
+  return dateObj.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 const GroupedItems: React.FC<GroupedItemsProps> = ({
@@ -44,14 +65,7 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
     <div>
       {Object.entries(groupedItems).map(([key, items]) => {
         const formattedKey =
-          groupName === 'date'
-            ? new Date(key).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              })
-            : key;
+          groupName === 'date' ? formatDateFromISO(key) : key;
 
         return (
           <React.Fragment key={key}>
@@ -78,7 +92,33 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                     />,
                   ]}
                 >
-                  {item.label}
+                  <Space>
+                    <Checkbox />
+                    <Typography.Text style={{ color: 'gray', fontSize: 13 }}>
+                      {formatTimeFromISO(item.timestamp)}
+                    </Typography.Text>
+                    <div
+                      className="clipboard-item-info"
+                      style={{ marginLeft: 20 }}
+                    >
+                      <Avatar
+                        shape="square"
+                        size={18}
+                        src={item.source.favicon}
+                      />
+                      <Typography.Text
+                        style={{ margin: '0 7px', fontSize: 13 }}
+                      >
+                        {item.label}
+                      </Typography.Text>
+                      <span> - </span>
+                      <Typography.Text
+                        style={{ margin: '0 7px', color: 'gray', fontSize: 13 }}
+                      >
+                        {item.source.name}
+                      </Typography.Text>
+                    </div>
+                  </Space>
                 </List.Item>
               )}
             />
