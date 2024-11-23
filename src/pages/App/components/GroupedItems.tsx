@@ -111,82 +111,84 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                 </Typography.Text>
               }
               dataSource={items}
-              renderItem={(item) => (
-                <List.Item
-                  actions={[
-                    <PushpinOutlined
-                      style={{ fontSize: 17, cursor: 'pointer' }}
-                    />,
-                    <CopyOutlined
-                      onClick={success}
-                      style={{ fontSize: 17, cursor: 'pointer' }}
-                    />,
-
-                    <Dropdown
-                      menu={{
-                        items: [
-                          {
-                            label: 'View Details',
-                            key: '0',
-                            onClick: () => console.log('view details'),
-                          },
-                          {
-                            label: 'Edit Label',
-                            key: '1',
-                            onClick: () => console.log('edit label'),
-                          },
-                          {
-                            label: 'Assign Shortcut Key',
-                            key: '2',
-                            onClick: () => console.log('Assign Shortcut Key'),
-                          },
-                          {
-                            label: 'Move to trash',
-                            key: '3',
-                            danger: true,
-                            onClick: () => console.log('delete'),
-                          },
-                        ],
-                      }}
-                      trigger={['click']}
-                    >
-                      <MoreOutlined
+              renderItem={(item) =>
+                !item.isTrashed && (
+                  <List.Item
+                    actions={[
+                      <PushpinOutlined
                         style={{ fontSize: 17, cursor: 'pointer' }}
-                      />
-                    </Dropdown>,
-                  ]}
-                >
-                  <Space>
-                    <Checkbox
-                      checked={checkedItems.includes(item.id)}
-                      onChange={() => handleCheck(item.id)}
-                    />
-                    <Typography.Text type="secondary">
-                      {formatTimeFromISO(item.timestamp)}
-                    </Typography.Text>
-                    <div
-                      className="clipboard-item-info"
-                      style={{ marginLeft: 20 }}
-                    >
-                      <Avatar
-                        shape="square"
-                        size={18}
-                        src={item.source.favicon}
-                      />
-                      <Typography.Text style={{ margin: '0 7px' }}>
-                        {truncateText(item.label, 40)}
-                      </Typography.Text>
-                      <span> - </span>
-                      <Typography.Text
-                        type="secondary"
-                        style={{ margin: '0 7px' }}
+                      />,
+                      <CopyOutlined
+                        onClick={success}
+                        style={{ fontSize: 17, cursor: 'pointer' }}
+                      />,
+
+                      <Dropdown
+                        menu={{
+                          items: [
+                            {
+                              label: 'View Details',
+                              key: '0',
+                              onClick: () => console.log('view details'),
+                            },
+                            {
+                              label: 'Edit Label',
+                              key: '1',
+                              onClick: () => console.log('edit label'),
+                            },
+                            {
+                              label: 'Assign Shortcut Key',
+                              key: '2',
+                              onClick: () => console.log('Assign Shortcut Key'),
+                            },
+                            {
+                              label: 'Move to trash',
+                              key: '3',
+                              danger: true,
+                              onClick: () => console.log('delete'),
+                            },
+                          ],
+                        }}
+                        trigger={['click']}
                       >
-                        {truncateText(item.source.name, 40)}
+                        <MoreOutlined
+                          style={{ fontSize: 17, cursor: 'pointer' }}
+                        />
+                      </Dropdown>,
+                    ]}
+                  >
+                    <Space>
+                      <Checkbox
+                        checked={checkedItems.includes(item.id)}
+                        onChange={() => handleCheck(item.id)}
+                      />
+                      <Typography.Text type="secondary">
+                        {formatTimeFromISO(item.timestamp)}
                       </Typography.Text>
-                    </div>
-                  </Space>
-                </List.Item>
-              )}
+                      <div
+                        className="clipboard-item-info"
+                        style={{ marginLeft: 20 }}
+                      >
+                        <Avatar
+                          shape="square"
+                          size={18}
+                          src={item.source.favicon}
+                        />
+                        <Typography.Text style={{ margin: '0 7px' }}>
+                          {truncateText(item.label, 40)}
+                        </Typography.Text>
+                        <span> - </span>
+                        <Typography.Text
+                          type="secondary"
+                          style={{ margin: '0 7px' }}
+                        >
+                          {truncateText(item.source.name, 40)}
+                        </Typography.Text>
+                      </div>
+                    </Space>
+                  </List.Item>
+                )
+              }
             />
           </React.Fragment>
         );
