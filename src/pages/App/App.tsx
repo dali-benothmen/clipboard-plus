@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Layout, Input, theme } from 'antd';
 import type { GetProps } from 'antd';
+import { CSSTransition } from 'react-transition-group';
 
 import SidebarMenu from './components/SidebarMenu';
 import Header from './components/Header';
 import AppScene from './scenes';
+import { useAppContext } from './hooks/useAppContext';
 
 import './App.css';
-import { useAppContext } from './hooks/useAppContext';
 
 type SearchProps = GetProps<typeof Input.Search>;
 
@@ -15,7 +16,7 @@ const { Content, Header: SlideInToolbar } = Layout;
 
 const App: React.FC = () => {
   const { checkedItems, scene, setScene } = useAppContext();
-
+  const nodeRef = useRef(null);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -26,19 +27,30 @@ const App: React.FC = () => {
   return (
     <Layout>
       <SidebarMenu onSceneChange={setScene} />
-      <Layout>
-        {checkedItems.length > 0 ? (
+      <Layout style={{ position: 'relative' }}>
+        <CSSTransition
+          in={checkedItems.length > 0}
+          nodeRef={nodeRef}
+          timeout={200}
+          classNames={'slide'}
+          unmountOnExit
+        >
           <SlideInToolbar
+            ref={nodeRef}
             className="app-header"
-            style={{ background: '#fff' }}
+            style={{
+              background: '#fff',
+              position: 'absolute',
+              width: '100%',
+              zIndex: 1,
+            }}
           />
-        ) : (
-          <Header
-            scene={scene}
-            onSearch={onSearch}
-            onDeleteHistory={() => console.log('Deleted')}
-          />
-        )}
+        </CSSTransition>
+        <Header
+          scene={scene}
+          onSearch={onSearch}
+          onDeleteHistory={() => console.log('Deleted')}
+        />
         <Content
           style={{
             margin: '24px 90px',
