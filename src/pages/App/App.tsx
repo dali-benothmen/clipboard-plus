@@ -8,6 +8,7 @@ import SidebarMenu from './components/SidebarMenu';
 import Header from './components/Header';
 import AppScene from './scenes';
 import { useAppContext } from './hooks/useAppContext';
+import { ClipboardItem } from '../../types';
 
 import './App.css';
 
@@ -16,7 +17,8 @@ type SearchProps = GetProps<typeof Input.Search>;
 const { Content, Header: SlideInToolbar } = Layout;
 
 const App: React.FC = () => {
-  const { checkedItems, scene, setScene, setCheckedItems } = useAppContext();
+  const { checkedItems, scene, setScene, setCheckedItems, setClipboardItems } =
+    useAppContext();
   const nodeRef = useRef(null);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -24,6 +26,21 @@ const App: React.FC = () => {
 
   const onSearch: SearchProps['onSearch'] = (value) =>
     console.log('value', value);
+
+  const handleMoveToTrash = (checkedItems: string[]) => {
+    chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+      const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
+        checkedItems.includes(item.id)
+          ? { ...item, isTrashed: !item.isTrashed }
+          : item
+      );
+
+      chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+        setClipboardItems(updatedItems);
+        setCheckedItems([]);
+      });
+    });
+  };
 
   return (
     <Layout>
@@ -63,7 +80,12 @@ const App: React.FC = () => {
                   {checkedItems.length} selected
                 </Typography.Text>
               </Space>
-              <Button color="danger" variant="outlined" shape="round">
+              <Button
+                color="danger"
+                variant="outlined"
+                shape="round"
+                onClick={() => handleMoveToTrash(checkedItems)}
+              >
                 Move to trash
               </Button>
             </Flex>
