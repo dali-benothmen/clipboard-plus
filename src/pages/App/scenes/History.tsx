@@ -4,6 +4,7 @@ import { BarsOutlined, AppstoreOutlined } from '@ant-design/icons';
 
 import GroupedItems, { GroupedItemsType } from '../components/GroupedItems';
 import { ClipboardItem } from '../../../types';
+import { useAppContext } from '../hooks/useAppContext';
 
 const groupItemsByDate = (items: ClipboardItem[]) => {
   return items.reduce((acc, item) => {
@@ -38,7 +39,7 @@ const groupItemsByCategory = (items: ClipboardItem[]) => {
 };
 
 const History = () => {
-  const [clipboardItems, setClipboardItems] = useState<ClipboardItem[]>([]);
+  const { clipboardItems, setClipboardItems } = useAppContext();
 
   const groupedItemsByDate = useMemo(
     () => groupItemsByDate(clipboardItems),
@@ -48,6 +49,8 @@ const History = () => {
     () => groupItemsByCategory(clipboardItems),
     [clipboardItems]
   );
+
+  console.log({ clipboardItems });
 
   useEffect(() => {
     const fetchClipboardHistory = () => {
