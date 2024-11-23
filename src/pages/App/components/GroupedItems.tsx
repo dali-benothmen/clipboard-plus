@@ -50,7 +50,7 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
   groupName,
 }) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const { checkedItems, setCheckedItems } = useAppContext();
+  const { checkedItems, setCheckedItems, setClipboardItems } = useAppContext();
 
   const handleCheck = (id: string) => {
     setCheckedItems((prevState) => {
@@ -59,6 +59,21 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
       } else {
         return [...prevState, id];
       }
+    });
+  };
+
+  const handleMoveToTrash = (checkedItems: string[]) => {
+    chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+      const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
+        checkedItems.includes(item.id)
+          ? { ...item, isTrashed: !item.isTrashed }
+          : item
+      );
+
+      chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+        setClipboardItems(updatedItems);
+        setCheckedItems([]);
+      });
     });
   };
 
@@ -145,7 +160,7 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                               label: 'Move to trash',
                               key: '3',
                               danger: true,
-                              onClick: () => console.log('delete'),
+                              onClick: () => handleMoveToTrash([item.id]),
                             },
                           ],
                         }}
