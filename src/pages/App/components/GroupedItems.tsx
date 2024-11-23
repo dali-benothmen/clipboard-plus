@@ -115,11 +115,11 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                 <List.Item
                   actions={[
                     <PushpinOutlined
-                      style={{ fontSize: 16, cursor: 'pointer' }}
+                      style={{ fontSize: 17, cursor: 'pointer' }}
                     />,
                     <CopyOutlined
                       onClick={success}
-                      style={{ fontSize: 16, cursor: 'pointer' }}
+                      style={{ fontSize: 17, cursor: 'pointer' }}
                     />,
 
                     <Dropdown
@@ -151,7 +151,7 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                       trigger={['click']}
                     >
                       <MoreOutlined
-                        style={{ fontSize: 16, cursor: 'pointer' }}
+                        style={{ fontSize: 17, cursor: 'pointer' }}
                       />
                     </Dropdown>,
                   ]}
@@ -161,7 +161,7 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                       checked={checkedItems.includes(item.id)}
                       onChange={() => handleCheck(item.id)}
                     />
-                    <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+                    <Typography.Text type="secondary">
                       {formatTimeFromISO(item.timestamp)}
                     </Typography.Text>
                     <div
@@ -173,15 +173,13 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                         size={18}
                         src={item.source.favicon}
                       />
-                      <Typography.Text
-                        style={{ margin: '0 7px', fontSize: 13 }}
-                      >
+                      <Typography.Text style={{ margin: '0 7px' }}>
                         {truncateText(item.label, 40)}
                       </Typography.Text>
                       <span> - </span>
                       <Typography.Text
                         type="secondary"
-                        style={{ margin: '0 7px', fontSize: 13 }}
+                        style={{ margin: '0 7px' }}
                       >
                         {truncateText(item.source.name, 40)}
                       </Typography.Text>
