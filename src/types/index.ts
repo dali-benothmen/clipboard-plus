@@ -5,6 +5,7 @@ export interface ClipboardItem {
   timestamp: string;
   category: Category | null;
   pinned: boolean;
+  isTrashed: boolean;
   source: Source;
 }
 

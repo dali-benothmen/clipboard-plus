@@ -4,20 +4,23 @@ export function saveCopiedItem(
   clipboardItem: {
     copiedText: string;
     url: string;
+    hostname: string;
     name: string;
     favicon: string;
   },
   maxClipboardItems: number = 100
 ) {
-  const { copiedText, url, favicon, name } = clipboardItem;
+  const { copiedText, url, hostname, favicon, name } = clipboardItem;
   const newCopiedItem = {
     id: uuid(),
     text: copiedText,
     label: copiedText,
     timestamp: new Date().toISOString(),
     pinned: false,
+    isTrashed: false,
     source: {
       url,
+      hostname,
       name,
       favicon,
     },
@@ -43,6 +46,7 @@ export function saveCopiedItem(
 type CopiedData = {
   copiedText: string;
   url: string;
+  hostname: string;
   name: string;
   favicon: string;
 };
@@ -53,10 +57,10 @@ export function handleCopyEvent(event: Event, getCopiedData: getCopiedDataFN) {
   event.preventDefault();
 
   try {
-    const { copiedText, url, name, favicon } = getCopiedData();
+    const { copiedText, url, name, favicon, hostname } = getCopiedData();
 
     if (copiedText) {
-      saveCopiedItem({ copiedText, url, name, favicon });
+      saveCopiedItem({ copiedText, url, hostname, name, favicon });
     }
   } catch (error) {
     console.error('Something went wrong', error);
