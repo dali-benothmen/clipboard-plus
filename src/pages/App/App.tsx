@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
-import { Layout, Input, theme } from 'antd';
+import { Layout, Input, theme, Space, Button, Typography, Flex } from 'antd';
 import type { GetProps } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 import { CSSTransition } from 'react-transition-group';
 
 import SidebarMenu from './components/SidebarMenu';
@@ -15,7 +16,7 @@ type SearchProps = GetProps<typeof Input.Search>;
 const { Content, Header: SlideInToolbar } = Layout;
 
 const App: React.FC = () => {
-  const { checkedItems, scene, setScene } = useAppContext();
+  const { checkedItems, scene, setScene, setCheckedItems } = useAppContext();
   const nodeRef = useRef(null);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -31,7 +32,7 @@ const App: React.FC = () => {
         <CSSTransition
           in={checkedItems.length > 0}
           nodeRef={nodeRef}
-          timeout={200}
+          timeout={100}
           classNames={'slide'}
           unmountOnExit
         >
@@ -44,7 +45,29 @@ const App: React.FC = () => {
               width: '100%',
               zIndex: 1,
             }}
-          />
+          >
+            <Flex
+              style={{ width: '100%' }}
+              justify="space-around"
+              align="center"
+            >
+              <Space>
+                <Button
+                  color="default"
+                  variant="text"
+                  shape="circle"
+                  icon={<CloseOutlined />}
+                  onClick={() => setCheckedItems([])}
+                />
+                <Typography.Text>
+                  {checkedItems.length} selected
+                </Typography.Text>
+              </Space>
+              <Button color="danger" variant="outlined" shape="round">
+                Move to trash
+              </Button>
+            </Flex>
+          </SlideInToolbar>
         </CSSTransition>
         <Header
           scene={scene}
