@@ -1,8 +1,9 @@
-import { handleCopyEvent } from '../../utils/storageUtils';
+import { uuid } from '../../utils/uuid';
 
-document.addEventListener('copy', (event) => {
-  const getCopiedData = () => {
-    const copiedText = document.getSelection().toString();
+document.addEventListener('copy', () => {
+  const copiedText = document.getSelection().toString();
+
+  if (copiedText) {
     const url = window.location.href;
     const hostname = window.location.hostname;
     const name = document.title || url;
@@ -10,8 +11,28 @@ document.addEventListener('copy', (event) => {
       document.querySelector("link[rel~='icon']")?.href ||
       `${window.location.origin}/favicon.ico`;
 
-    return { copiedText, url, hostname, name, favicon };
-  };
+    const newCopiedItem = {
+      id: uuid(),
+      text: copiedText,
+      label: copiedText,
+      timestamp: new Date().toISOString(),
+      pinned: false,
+      isTrashed: false,
+      category: null,
+      source: {
+        url,
+        hostname,
+        name,
+        favicon,
+      },
+    };
 
-  handleCopyEvent(event, getCopiedData);
+    chrome.storage.local.get('clipboardHistory', (result) => {
+      let clipboardHistory = result.clipboardHistory || [];
+
+      clipboardHistory.unshift(newCopiedItem);
+
+      chrome.storage.local.set({ clipboardHistory });
+    });
+  }
 });
