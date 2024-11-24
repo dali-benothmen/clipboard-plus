@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { message, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { BarsOutlined, AppstoreOutlined } from '@ant-design/icons';
 
 import GroupedItems, { GroupedItemsType } from '../components/GroupedItems';
@@ -50,7 +50,6 @@ const History = () => {
     savedClipboardId,
   } = useAppContext();
   const { setIsModalOpen } = useModalContext();
-  const [messageApi, contextHolder] = message.useMessage();
 
   const groupedItemsByDate = useMemo(
     () => groupItemsByDate(clipboardItems),
