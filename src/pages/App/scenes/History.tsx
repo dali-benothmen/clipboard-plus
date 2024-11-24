@@ -23,32 +23,33 @@ const groupItemsByDate = (items: ClipboardItem[]) => {
   }, {} as Record<string, ClipboardItem[]>);
 };
 
-const groupItemsByCategory = (items: ClipboardItem[]) => {
+const groupItemsByCategory = (
+  items: ClipboardItem[],
+  categories: Category[]
+) => {
+  const orderedCategories = categories.reduce((acc, category) => {
+    acc[category.name] = [];
+    return acc;
+  }, {} as Record<string, ClipboardItem[]>);
+
   return items.reduce((acc, item) => {
     const { category } = item;
 
     if (category && category.name) {
       const categoryName = category.name;
 
-      if (!acc[categoryName]) {
-        acc[categoryName] = [];
+      if (orderedCategories[categoryName]) {
+        orderedCategories[categoryName].push(item);
       }
-
-      acc[categoryName].push(item);
     }
 
-    return acc;
+    return orderedCategories;
   }, {} as Record<string, ClipboardItem[]>);
 };
 
 const History = () => {
-  const {
-    clipboardItems,
-    setClipboardItems,
-    categories,
-    setCategories,
-    savedClipboardId,
-  } = useAppContext();
+  const { clipboardItems, setClipboardItems, categories, setCategories } =
+    useAppContext();
   const { setIsModalOpen } = useModalContext();
 
   const groupedItemsByDate = useMemo(
@@ -56,7 +57,7 @@ const History = () => {
     [clipboardItems]
   );
   const groupedItemsByCategory = useMemo(
-    () => groupItemsByCategory(clipboardItems),
+    () => groupItemsByCategory(clipboardItems, categories),
     [clipboardItems]
   );
 
