@@ -11,7 +11,7 @@ import { Category, ClipboardItem } from '../../../types';
 
 const groupItemsByDate = (items: ClipboardItem[]) => {
   return items.reduce((acc, item) => {
-    const date = item.timestamp.split('T')[0];
+    const date = new Date(item.timestamp).toLocaleDateString('en-CA');
 
     if (!acc[date]) {
       acc[date] = [];
