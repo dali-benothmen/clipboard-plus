@@ -10,10 +10,17 @@ import {
   Dropdown,
   message,
 } from 'antd';
-import { PushpinOutlined, CopyOutlined, MoreOutlined } from '@ant-design/icons';
-import { ClipboardItem } from '../../../types';
+import {
+  PushpinOutlined,
+  CopyOutlined,
+  MoreOutlined,
+  PushpinFilled,
+} from '@ant-design/icons';
+import { Category, ClipboardItem } from '../../../types';
 import { truncateText } from '../../../utils/truncateText';
 import { useAppContext } from '../hooks/useAppContext';
+import { uuid } from '../../../utils/uuid';
+import { useModalContext } from '../hooks/useModalContext';
 
 export interface GroupedItemsType {
   [key: string]: ClipboardItem[];
@@ -50,7 +57,13 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
   groupName,
 }) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const { checkedItems, setCheckedItems, setClipboardItems } = useAppContext();
+  const {
+    checkedItems,
+    setCheckedItems,
+    setClipboardItems,
+    setSavedClipboardId,
+  } = useAppContext();
+  const { setIsModalOpen } = useModalContext();
 
   const handleCheck = (id: string) => {
     setCheckedItems((prevState) => {
@@ -59,6 +72,15 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
       } else {
         return [...prevState, id];
       }
+    });
+  };
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+
+    messageApi.open({
+      type: 'success',
+      content: 'Item copied',
     });
   };
 
@@ -77,11 +99,21 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
     });
   };
 
-  const success = () => {
-    messageApi.open({
-      type: 'success',
-      content: 'Item copied',
+  const handleUnsaveClipboard = (id: string) => {
+    chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+      const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
+        item.id === id ? { ...item, category: null } : item
+      );
+
+      chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+        setClipboardItems(updatedItems);
+      });
     });
+  };
+
+  const handleShowClipboardModal = (clipboardId: string) => {
+    setSavedClipboardId(clipboardId);
+    setIsModalOpen(true);
   };
 
   if (Object.keys(groupedItems).length === 0) {
@@ -130,11 +162,19 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                 !item.isTrashed && (
                   <List.Item
                     actions={[
-                      <PushpinOutlined
-                        style={{ fontSize: 17, cursor: 'pointer' }}
-                      />,
+                      item.category ? (
+                        <PushpinFilled
+                          style={{ fontSize: 17, cursor: 'pointer' }}
+                          onClick={() => handleUnsaveClipboard(item.id)}
+                        />
+                      ) : (
+                        <PushpinOutlined
+                          style={{ fontSize: 17, cursor: 'pointer' }}
+                          onClick={() => handleShowClipboardModal(item.id)}
+                        />
+                      ),
                       <CopyOutlined
-                        onClick={success}
+                        onClick={() => handleCopy(item.text)}
                         style={{ fontSize: 17, cursor: 'pointer' }}
                       />,
 
@@ -197,7 +237,7 @@ const GroupedItems: React.FC<GroupedItemsProps> = ({
                           type="secondary"
                           style={{ margin: '0 7px' }}
                         >
-                          {truncateText(item.source.name, 40)}
+                          {truncateText(item.source.hostname, 40)}
                         </Typography.Text>
                       </div>
                     </Space>

@@ -20,3 +20,5 @@ export interface Category {
   id: string;
   name: string;
 }
+
+export type Dispatch<T> = React.Dispatch<React.SetStateAction<T>>;

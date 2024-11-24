@@ -1,5 +1,5 @@
 import React, { createContext, useState, useMemo } from 'react';
-import { ClipboardItem } from '../../../types';
+import { Category, ClipboardItem } from '../../../types';
 
 export enum Scenes {
   HISTORY = 'History',
@@ -18,9 +18,13 @@ export interface AppContextType {
   scene: Scene;
   setScene: (scene: Scene) => void;
   clipboardItems: ClipboardItem[];
-  setClipboardItems: (clipboardItems: ClipboardItem[]) => void;
+  setClipboardItems: React.Dispatch<React.SetStateAction<ClipboardItem[]>>;
   checkedItems: string[];
   setCheckedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  categories: Category[];
+  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
+  savedClipboardId: string;
+  setSavedClipboardId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const defaultContext: AppContextType = {
@@ -30,6 +34,10 @@ const defaultContext: AppContextType = {
   setClipboardItems: () => {},
   checkedItems: [],
   setCheckedItems: () => {},
+  categories: [],
+  setCategories: () => {},
+  savedClipboardId: '',
+  setSavedClipboardId: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(defaultContext);
@@ -42,6 +50,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [scene, setScene] = useState<Scene>(Scenes.HISTORY);
   const [clipboardItems, setClipboardItems] = useState<ClipboardItem[]>([]);
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [savedClipboardId, setSavedClipboardId] = useState<string>('');
 
   const value = useMemo(
     () => ({
@@ -51,8 +61,12 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setClipboardItems,
       checkedItems,
       setCheckedItems,
+      categories,
+      setCategories,
+      savedClipboardId,
+      setSavedClipboardId,
     }),
-    [scene, clipboardItems, checkedItems]
+    [scene, clipboardItems, checkedItems, categories, savedClipboardId]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
