@@ -27,24 +27,21 @@ const groupItemsByCategory = (
   items: ClipboardItem[],
   categories: Category[]
 ) => {
-  const orderedCategories = categories.reduce((acc, category) => {
+  const grouped = categories.reduce((acc, category) => {
     acc[category.name] = [];
     return acc;
   }, {} as Record<string, ClipboardItem[]>);
 
-  return items.reduce((acc, item) => {
-    const { category } = item;
-
-    if (category && category.name) {
-      const categoryName = category.name;
-
-      if (orderedCategories[categoryName]) {
-        orderedCategories[categoryName].push(item);
-      }
+  items.forEach((item) => {
+    const categoryName = item.category?.name;
+    if (categoryName && grouped[categoryName]) {
+      grouped[categoryName].push(item);
     }
+  });
 
-    return orderedCategories;
-  }, {} as Record<string, ClipboardItem[]>);
+  return Object.fromEntries(
+    Object.entries(grouped).filter(([, items]) => items.length > 0)
+  );
 };
 
 const History = () => {
