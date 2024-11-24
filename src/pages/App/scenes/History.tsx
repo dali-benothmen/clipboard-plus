@@ -85,12 +85,6 @@ const History = () => {
     fetchCategories();
   }, [setCategories]);
 
-  console.log({
-    categories,
-    clipboardItems,
-    savedClipboardId,
-  });
-
   const handleCreateCategory = (categoryName: string) => {
     const trimmedCategoryName = categoryName.trim().toLowerCase();
 
