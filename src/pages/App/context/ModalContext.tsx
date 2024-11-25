@@ -1,10 +1,11 @@
 import React, { createContext, useState, useMemo } from 'react';
+import { SetStateDispatcher } from '../../../types';
 
 export interface ModalContextType {
   isModalOpen: boolean;
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsModalOpen: SetStateDispatcher<boolean>;
   isCreateCategoryFormVisible: boolean;
-  setIsCreateCategoryFormVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsCreateCategoryFormVisible: SetStateDispatcher<boolean>;
 }
 
 const defaultContext: ModalContextType = {

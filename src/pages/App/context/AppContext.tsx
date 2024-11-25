@@ -1,5 +1,5 @@
 import React, { createContext, useState, useMemo } from 'react';
-import { Category, ClipboardItem } from '../../../types';
+import { Category, ClipboardItem, SetStateDispatcher } from '../../../types';
 
 export enum Scenes {
   HISTORY = 'History',
@@ -18,13 +18,13 @@ export interface AppContextType {
   scene: Scene;
   setScene: (scene: Scene) => void;
   clipboardItems: ClipboardItem[];
-  setClipboardItems: React.Dispatch<React.SetStateAction<ClipboardItem[]>>;
+  setClipboardItems: SetStateDispatcher<ClipboardItem[]>;
   checkedItems: string[];
-  setCheckedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  setCheckedItems: SetStateDispatcher<string[]>;
   categories: Category[];
-  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
+  setCategories: SetStateDispatcher<Category[]>;
   savedClipboardId: string;
-  setSavedClipboardId: React.Dispatch<React.SetStateAction<string>>;
+  setSavedClipboardId: SetStateDispatcher<string>;
 }
 
 const defaultContext: AppContextType = {

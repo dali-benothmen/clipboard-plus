@@ -21,4 +21,4 @@ export interface Category {
   name: string;
 }
 
-export type Dispatch<T> = React.Dispatch<React.SetStateAction<T>>;
+export type SetStateDispatcher<T> = React.Dispatch<React.SetStateAction<T>>;
