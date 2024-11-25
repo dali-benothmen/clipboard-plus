@@ -44,6 +44,18 @@ const groupItemsByCategory = (
   );
 };
 
+const GroupedByDate = ({
+  groupedItems,
+}: {
+  groupedItems: Record<string, ClipboardItem[]>;
+}) => <GroupedItems groupedItems={groupedItems} groupName="date" />;
+
+const GroupedByCategory = ({
+  groupedItems,
+}: {
+  groupedItems: Record<string, ClipboardItem[]>;
+}) => <GroupedItems groupedItems={groupedItems} groupName="category" />;
+
 const History = () => {
   const { clipboardItems, setClipboardItems, categories, setCategories } =
     useAppContext();
@@ -55,7 +67,7 @@ const History = () => {
   );
   const groupedItemsByCategory = useMemo(
     () => groupItemsByCategory(clipboardItems, categories),
-    [clipboardItems]
+    [clipboardItems, categories]
   );
 
   useEffect(() => {
@@ -83,24 +95,18 @@ const History = () => {
   }, [setCategories]);
 
   const handleCreateCategory = (categoryName: string) => {
-    const trimmedCategoryName = categoryName.trim().toLowerCase();
+    const trimmedName = categoryName.trim().toLowerCase();
 
-    chrome.storage.local.get(['categories'], ({ categories }) => {
-      const categoryExists = categories.some(
+    chrome.storage.local.get(['categories'], ({ categories = [] }) => {
+      const isDuplicate = categories.some(
         (category: Category) =>
-          category.name.trim().toLowerCase() === trimmedCategoryName
+          category.name.trim().toLowerCase() === trimmedName
       );
 
-      if (categoryExists) {
-        alert(`Category "${categoryName}" already exists.`);
-        return null;
-      }
+      if (isDuplicate)
+        return alert(`Category "${categoryName}" already exists.`);
 
-      const newCategory: Category = {
-        id: uuid(),
-        name: categoryName.trim(),
-      };
-
+      const newCategory = { id: uuid(), name: categoryName.trim() };
       const updatedCategories = [...categories, newCategory];
 
       chrome.storage.local.set({ categories: updatedCategories }, () => {
@@ -115,42 +121,42 @@ const History = () => {
   ) => {
     const category = await ensureCategoryExists(categoryName);
 
-    chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
-      const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
-        item.id === itemId ? { ...item, category } : item
-      );
+    if (category) {
+      chrome.storage.local.get(
+        ['clipboardHistory'],
+        ({ clipboardHistory = [] }) => {
+          const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
+            item.id === itemId ? { ...item, category } : item
+          );
 
-      chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
-        setClipboardItems(updatedItems);
-        setIsModalOpen(false);
-      });
-    });
+          chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+            setClipboardItems(updatedItems);
+            setIsModalOpen(false);
+          });
+        }
+      );
+    }
   };
 
   const ensureCategoryExists = async (
     categoryName: string
   ): Promise<Category | null> => {
-    try {
-      const trimmedCategoryName = categoryName.trim().toLowerCase();
+    const trimmedName = categoryName.trim().toLowerCase();
 
+    try {
       const result = await chrome.storage.local.get(['categories']);
-      const categories: Category[] = Array.isArray(result.categories)
-        ? result.categories
-        : [];
+      const categories: Category[] = result.categories || [];
 
       let category = categories.find(
-        (c) => c.name.trim().toLowerCase() === trimmedCategoryName
+        (c) => c.name.trim().toLowerCase() === trimmedName
       );
 
       if (!category) {
-        category = {
-          id: uuid(),
-          name: categoryName.trim(),
-        };
-
+        category = { id: uuid(), name: categoryName.trim() };
         const updatedCategories = [...categories, category];
 
         await chrome.storage.local.set({ categories: updatedCategories });
+        setCategories(updatedCategories);
       }
 
       return category;
@@ -160,43 +166,32 @@ const History = () => {
     }
   };
 
-  const GroupedByDate: React.FC<{
-    groupedItems: GroupedItemsType;
-  }> = ({ groupedItems }) => {
-    return <GroupedItems groupedItems={groupedItems} groupName="date" />;
-  };
-
-  const GroupedByCategory: React.FC<{
-    groupedItems: GroupedItemsType;
-  }> = ({ groupedItems }) => {
-    return <GroupedItems groupedItems={groupedItems} groupName="category" />;
-  };
-
   return (
     <>
       <SaveClipboardModal
         onCreateCategory={handleCreateCategory}
         onSaveClipboard={handleSaveClipboardItemToCategory}
       />
-      <Tabs
-        defaultActiveKey="1"
-        items={[
-          {
-            key: '1',
-            label: 'By date',
-            children: <GroupedByDate groupedItems={groupedItemsByDate} />,
-            icon: <BarsOutlined />,
-          },
-          {
-            key: '2',
-            label: 'By category',
-            children: (
-              <GroupedByCategory groupedItems={groupedItemsByCategory} />
-            ),
-            icon: <AppstoreOutlined />,
-          },
-        ]}
-      />
+      <Tabs defaultActiveKey="1">
+        <Tabs.TabPane
+          key="1"
+          tab={
+            <span>
+              <BarsOutlined /> By date
+            </span>
+          }
+          children={<GroupedByDate groupedItems={groupedItemsByDate} />}
+        />
+        <Tabs.TabPane
+          key="2"
+          tab={
+            <span>
+              <AppstoreOutlined /> By category
+            </span>
+          }
+          children={<GroupedByCategory groupedItems={groupedItemsByCategory} />}
+        />
+      </Tabs>
     </>
   );
 };
