@@ -16,10 +16,10 @@ import {
   MoreOutlined,
   PushpinFilled,
 } from '@ant-design/icons';
-import { Category, ClipboardItem } from '../../../types';
+
+import { ClipboardItem } from '../../../types';
 import { truncateText } from '../../../utils/truncateText';
 import { useAppContext } from '../hooks/useAppContext';
-import { uuid } from '../../../utils/uuid';
 import { useModalContext } from '../hooks/useModalContext';
 
 export interface GroupedItemsType {
