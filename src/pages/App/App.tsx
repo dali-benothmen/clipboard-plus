@@ -1,9 +1,8 @@
 import React, { useRef } from 'react';
-import { Layout, Input, theme, Space, Button, Typography, Flex } from 'antd';
+import { Layout, Input, theme } from 'antd';
 import type { GetProps } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
-import { CSSTransition } from 'react-transition-group';
 
+import CheckedItemsToolbar from './components/CheckedItemsToolbar';
 import SidebarMenu from './components/SidebarMenu';
 import Header from './components/Header';
 import AppScene from './scenes';
@@ -14,7 +13,7 @@ import './App.css';
 
 type SearchProps = GetProps<typeof Input.Search>;
 
-const { Content, Header: SlideInToolbar } = Layout;
+const { Content } = Layout;
 
 const App: React.FC = () => {
   const { checkedItems, scene, setScene, setCheckedItems, setClipboardItems } =
@@ -46,51 +45,13 @@ const App: React.FC = () => {
     <Layout>
       <SidebarMenu onSceneChange={setScene} />
       <Layout style={{ position: 'relative' }}>
-        <CSSTransition
-          in={checkedItems.length > 0}
+        <CheckedItemsToolbar
+          visible={checkedItems.length > 0}
+          checkedItemsCount={checkedItems.length}
+          onClearSelection={() => setCheckedItems([])}
+          onMoveToTrash={() => handleMoveToTrash(checkedItems)}
           nodeRef={nodeRef}
-          timeout={100}
-          classNames={'slide'}
-          unmountOnExit
-        >
-          <SlideInToolbar
-            ref={nodeRef}
-            className="app-header"
-            style={{
-              background: '#fff',
-              position: 'absolute',
-              width: '100%',
-              zIndex: 1,
-            }}
-          >
-            <Flex
-              style={{ width: '100%' }}
-              justify="space-around"
-              align="center"
-            >
-              <Space>
-                <Button
-                  color="default"
-                  variant="text"
-                  shape="circle"
-                  icon={<CloseOutlined />}
-                  onClick={() => setCheckedItems([])}
-                />
-                <Typography.Text>
-                  {checkedItems.length} selected
-                </Typography.Text>
-              </Space>
-              <Button
-                color="danger"
-                variant="outlined"
-                shape="round"
-                onClick={() => handleMoveToTrash(checkedItems)}
-              >
-                Move to trash
-              </Button>
-            </Flex>
-          </SlideInToolbar>
-        </CSSTransition>
+        />
         <Header
           scene={scene}
           onSearch={onSearch}
