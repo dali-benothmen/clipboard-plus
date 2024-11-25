@@ -6,10 +6,6 @@ import { useModalContext } from '../hooks/useModalContext';
 import { useAppContext } from '../hooks/useAppContext';
 import { Category } from '../../../types';
 
-/*
-  Future Changes: Replace Search category Input with and.design Autocomplete Input
-*/
-
 interface SaveClipboardModalProps {
   onCreateCategory: (categoryName: string) => void;
   onSaveClipboard: (clipboardId: string, categoryName: string) => void;
@@ -28,14 +24,34 @@ const SaveClipboardModal: React.FC<SaveClipboardModalProps> = ({
   const { categories, savedClipboardId } = useAppContext();
 
   const createCategoryInputRef = useRef<InputRef>(null);
+  const categoryRefs = useRef(new Map<string, HTMLElement | null>());
 
   const [searchCategoryInput, setSearchCategoryInput] = useState<string>('');
   const [filteredCategories, setFilteredCategories] =
     useState<Category[]>(categories);
+  const [highlightedCategoryId, setHighlightedCategoryId] = useState<
+    string | null
+  >(null);
 
   const defaultCategory = categories.find(
     (category) => category.name === 'General'
   );
+
+  useEffect(() => {
+    if (highlightedCategoryId) {
+      const targetElement = categoryRefs.current.get(highlightedCategoryId);
+
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        const timeout = setTimeout(() => {
+          setHighlightedCategoryId(null);
+        }, 2000);
+
+        return () => clearTimeout(timeout);
+      }
+    }
+  }, [highlightedCategoryId]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -58,22 +74,49 @@ const SaveClipboardModal: React.FC<SaveClipboardModalProps> = ({
     setFilteredCategories(filtered);
   };
 
+  const handleCreateCategory = (categoryName: string) => {
+    if (!categoryName.trim()) return;
+
+    onCreateCategory(categoryName);
+
+    setTimeout(() => {
+      const updatedCategories = [...categories];
+      const newCategory = updatedCategories[updatedCategories.length - 1];
+
+      if (newCategory) {
+        setHighlightedCategoryId(newCategory.id);
+      }
+    }, 200);
+  };
+
   const Category = ({
+    id,
     categoryName,
     onSaveClipboard,
   }: {
+    id: string;
     categoryName: string;
     onSaveClipboard: (clipboardId: string, categoryName: string) => void;
   }) => (
     <Flex
       justify="space-between"
       align="center"
-      style={{ marginBottom: 12, marginRight: 3 }}
+      ref={(element) => {
+        if (element) {
+          categoryRefs.current.set(id, element);
+        } else {
+          categoryRefs.current.delete(id);
+        }
+      }}
+      style={{
+        marginBottom: 12,
+        marginRight: 3,
+      }}
     >
       <Typography.Text>
         <strong>{categoryName}</strong>
       </Typography.Text>
-      <Button onClick={() => onSaveClipboard(savedClipboardId, 'General')}>
+      <Button onClick={() => onSaveClipboard(savedClipboardId, categoryName)}>
         Save
       </Button>
     </Flex>
@@ -94,16 +137,20 @@ const SaveClipboardModal: React.FC<SaveClipboardModalProps> = ({
         placeholder="Category name"
         ref={createCategoryInputRef}
         onPressEnter={() => {
-          onCreateCategory(createCategoryInputRef.current?.input?.value ?? '');
+          handleCreateCategory(
+            createCategoryInputRef.current?.input?.value ?? ''
+          );
         }}
       />
       <Button
         color="primary"
         variant="outlined"
         style={{ margin: '0 10px' }}
-        onClick={() => {
-          onCreateCategory(createCategoryInputRef.current?.input?.value ?? '');
-        }}
+        onClick={() =>
+          handleCreateCategory(
+            createCategoryInputRef.current?.input?.value ?? ''
+          )
+        }
       >
         Create
       </Button>
@@ -115,13 +162,13 @@ const SaveClipboardModal: React.FC<SaveClipboardModalProps> = ({
 
   return (
     <Modal
+      closable
       title="Save to category"
       open={isModalOpen}
-      footer={() => <div />}
+      footer={null}
       onCancel={() => {
         setIsModalOpen(false);
       }}
-      closable
     >
       <Typography.Text type="secondary" style={{ fontSize: 13 }}>
         Choose a category to save this item or create a new one. Categories help
@@ -139,6 +186,7 @@ const SaveClipboardModal: React.FC<SaveClipboardModalProps> = ({
       <Flex vertical justify="space-between" className="category-list">
         {!defaultCategory && (
           <Category
+            id={'default'}
             categoryName="General"
             onSaveClipboard={() => onSaveClipboard(savedClipboardId, 'General')}
           />
@@ -146,6 +194,7 @@ const SaveClipboardModal: React.FC<SaveClipboardModalProps> = ({
         {filteredCategories.map(({ name, id }) => (
           <Category
             key={id}
+            id={id}
             categoryName={name}
             onSaveClipboard={() => onSaveClipboard(savedClipboardId, name)}
           />
