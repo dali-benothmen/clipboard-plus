@@ -27,7 +27,7 @@ const FilteredItemsList: React.FC<FilteredItemsListProps> = ({
       size="small"
       header={
         <Typography.Text>
-          <strong>Found {filteredItems.length} search result'</strong>
+          <strong>Found {filteredItems.length} search result</strong>
         </Typography.Text>
       }
       dataSource={filteredItems}

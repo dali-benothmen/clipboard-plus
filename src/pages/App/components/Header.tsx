@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Input, Typography, Button, Layout } from 'antd';
+import { Input, Typography, Button, Layout, AutoComplete } from 'antd';
+import type { AutoCompleteProps } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import debounce from 'debounce';
 import { useAppContext } from '../hooks/useAppContext';
-import { useHeaderContext } from '../hooks/useHeaderContext';
+import { debounce } from 'lodash';
 
 interface HeaderProps {
   scene: string;
@@ -13,16 +13,19 @@ interface HeaderProps {
 const { Header } = Layout;
 
 const AppHeader: React.FC<HeaderProps> = ({ scene, onDeleteHistory }) => {
-  const { clipboardItems, setFilteredClipboardItems, setIsSearching } =
-    useAppContext();
+  const { clipboardItems, setFilteredClipboardItems } = useAppContext();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [options, setOptions] = useState<{ value: string }[]>([]);
 
   const debouncedSearch = useCallback(
     debounce((searchTerm: string) => {
       const trimmedTerm = searchTerm.trim();
+
       if (!trimmedTerm) {
         setFilteredClipboardItems(clipboardItems);
+        setOptions([]);
+
         return;
       }
 
@@ -30,54 +33,52 @@ const AppHeader: React.FC<HeaderProps> = ({ scene, onDeleteHistory }) => {
         item.label.toLowerCase().includes(trimmedTerm.toLowerCase())
       );
 
-      setFilteredClipboardItems(filteredItems);
+      const autocompleteOptions = filteredItems.map((item) => ({
+        value: item.label,
+      }));
+
+      setOptions(autocompleteOptions);
     }, 300),
     [clipboardItems, setFilteredClipboardItems]
   );
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = e.target.value;
+  const handleSearch = (searchText: string) => {
+    setSearchQuery(searchText);
 
-    setIsSearching(true);
+    if (!searchText) {
+      setOptions([]);
+      setFilteredClipboardItems([]);
+    } else {
+      debouncedSearch(searchText);
+    }
+  };
 
-    debouncedSearch(searchTerm);
+  const handleSelect = (value: string) => {
+    const filteredItems = clipboardItems.filter((item) =>
+      item.label.toLowerCase().includes(value.toLowerCase())
+    );
 
-    setSearchQuery(searchTerm);
+    setFilteredClipboardItems(filteredItems);
   };
 
   const handleClearSearch = () => {
     setSearchQuery('');
-    setFilteredClipboardItems(clipboardItems);
-    setIsSearching(false);
+    setFilteredClipboardItems([]);
+    setOptions([]);
   };
-
-  useEffect(() => {
-    return () => {
-      debouncedSearch.clear();
-    };
-  }, [debouncedSearch]);
-
-  useEffect(() => {
-    setFilteredClipboardItems(clipboardItems);
-  }, [clipboardItems]);
-
-  useEffect(() => {
-    return () => {
-      debouncedSearch.clear();
-    };
-  }, [debouncedSearch]);
 
   return (
     <Header className="app-header">
       <Typography.Title className="scene-name">{scene}</Typography.Title>
-      <Input
+      <AutoComplete
+        value={searchQuery}
+        options={options}
+        style={{ width: 500 }}
+        onSearch={handleSearch}
+        onSelect={handleSelect}
+        placeholder="Search clipboard history"
         allowClear
         onClear={handleClearSearch}
-        placeholder="Search clipboard history"
-        value={searchQuery}
-        prefix={<SearchOutlined />}
-        style={{ width: 500 }}
-        onChange={handleInputChange}
       />
       <Button type="default" variant="solid" onClick={onDeleteHistory}>
         Delete Clipboard History

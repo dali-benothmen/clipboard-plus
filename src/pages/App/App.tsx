@@ -9,12 +9,19 @@ import { useAppContext } from './hooks/useAppContext';
 import { ClipboardItem } from '../../types';
 
 import './App.css';
+import FilteredItemsList from './components/FilteredItemsList';
 
 const { Content } = Layout;
 
 const App: React.FC = () => {
-  const { checkedItems, scene, setScene, setCheckedItems, setClipboardItems } =
-    useAppContext();
+  const {
+    checkedItems,
+    scene,
+    setScene,
+    setCheckedItems,
+    setClipboardItems,
+    filteredClipboardItems,
+  } = useAppContext();
   const nodeRef = useRef(null);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -57,7 +64,11 @@ const App: React.FC = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          <AppScene scene={scene} />
+          {filteredClipboardItems.length > 0 ? (
+            <FilteredItemsList filteredItems={filteredClipboardItems} />
+          ) : (
+            <AppScene scene={scene} />
+          )}
         </Content>
       </Layout>
     </Layout>

@@ -27,8 +27,6 @@ export interface AppContextType {
   setSavedClipboardId: SetStateDispatcher<string>;
   filteredClipboardItems: ClipboardItem[];
   setFilteredClipboardItems: SetStateDispatcher<ClipboardItem[]>;
-  isSearching: boolean;
-  setIsSearching: SetStateDispatcher<boolean>;
 }
 
 const defaultContext: AppContextType = {
@@ -44,8 +42,6 @@ const defaultContext: AppContextType = {
   setSavedClipboardId: () => {},
   filteredClipboardItems: [],
   setFilteredClipboardItems: () => {},
-  isSearching: false,
-  setIsSearching: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(defaultContext);
@@ -63,7 +59,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [savedClipboardId, setSavedClipboardId] = useState<string>('');
-  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const value = useMemo(
     () => ({
@@ -79,8 +74,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setSavedClipboardId,
       filteredClipboardItems,
       setFilteredClipboardItems,
-      isSearching,
-      setIsSearching,
     }),
     [
       scene,
@@ -89,7 +82,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       categories,
       savedClipboardId,
       filteredClipboardItems,
-      isSearching,
     ]
   );
 
