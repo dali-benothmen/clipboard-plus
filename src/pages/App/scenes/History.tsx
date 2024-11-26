@@ -171,7 +171,13 @@ const History = () => {
         onCreateCategory={handleCreateCategory}
         onSaveClipboard={handleSaveClipboardItemToCategory}
       />
-      {isLoading && <Spin tip="Loading" size="default" />}
+      {isLoading && (
+        <Spin
+          style={{ display: 'flex', justifyContent: 'center' }}
+          tip="Loading"
+          size="default"
+        />
+      )}
       {!isLoading && (
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane
