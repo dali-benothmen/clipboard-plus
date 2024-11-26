@@ -78,8 +78,6 @@ const History = () => {
     [clipboardItems, categories]
   );
 
-  console.log({ clipboardItems, filteredClipboardItems });
-
   useEffect(() => {
     const fetchData = () => {
       setIsLoading(true);
