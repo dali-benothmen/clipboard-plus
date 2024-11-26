@@ -5,7 +5,6 @@ import GroupedItems from '../components/GroupedItems';
 import SaveClipboardModal from '../components/SaveClipboardModal';
 import { useAppContext } from '../hooks/useAppContext';
 import { useModalContext } from '../hooks/useModalContext';
-import FilteredItemsList from '../components/FilteredItemsList';
 import { uuid } from '../../../utils/uuid';
 import { Category, ClipboardItem } from '../../../types';
 
@@ -57,14 +56,8 @@ const GroupedByCategory = ({
 }) => <GroupedItems groupedItems={groupedItems} groupName="category" />;
 
 const History = () => {
-  const {
-    clipboardItems,
-    setClipboardItems,
-    categories,
-    setCategories,
-    filteredClipboardItems,
-    isSearching,
-  } = useAppContext();
+  const { clipboardItems, setClipboardItems, categories, setCategories } =
+    useAppContext();
   const { setIsModalOpen } = useModalContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -179,7 +172,7 @@ const History = () => {
         onSaveClipboard={handleSaveClipboardItemToCategory}
       />
       {isLoading && <Spin tip="Loading" size="default" />}
-      {!isLoading && !isSearching && (
+      {!isLoading && (
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane
             key="1"
@@ -202,9 +195,6 @@ const History = () => {
             }
           />
         </Tabs>
-      )}
-      {isSearching && (
-        <FilteredItemsList filteredItems={filteredClipboardItems} />
       )}
     </>
   );
