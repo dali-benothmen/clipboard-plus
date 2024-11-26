@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Spin, Tabs } from 'antd';
+import { Skeleton, Spin, Tabs } from 'antd';
 import { BarsOutlined, AppstoreOutlined } from '@ant-design/icons';
 import GroupedItems from '../components/GroupedItems';
 import SaveClipboardModal from '../components/SaveClipboardModal';
@@ -171,13 +171,7 @@ const History = () => {
         onCreateCategory={handleCreateCategory}
         onSaveClipboard={handleSaveClipboardItemToCategory}
       />
-      {isLoading && (
-        <Spin
-          style={{ display: 'flex', justifyContent: 'center' }}
-          tip="Loading"
-          size="default"
-        />
-      )}
+      {isLoading && <Skeleton active paragraph={{ rows: 10 }} />}
       {!isLoading && (
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane
