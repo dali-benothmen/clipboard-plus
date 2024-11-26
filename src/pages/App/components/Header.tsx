@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Input, Typography, Button, Layout, AutoComplete } from 'antd';
-import type { AutoCompleteProps } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useAppContext } from '../hooks/useAppContext';
 import { debounce } from 'lodash';
@@ -73,15 +72,19 @@ const AppHeader: React.FC<HeaderProps> = ({ scene, onDeleteHistory }) => {
       <AutoComplete
         value={searchQuery}
         options={options}
-        style={{ width: 500 }}
         onSearch={handleSearch}
         onSelect={handleSelect}
-        placeholder="Search clipboard history"
-        allowClear
-        onClear={handleClearSearch}
-      />
+      >
+        <Input
+          allowClear
+          onClear={handleClearSearch}
+          placeholder="Search clipboard history"
+          prefix={<SearchOutlined />}
+          style={{ width: 500 }}
+        />
+      </AutoComplete>
       <Button type="default" variant="solid" onClick={onDeleteHistory}>
-        Delete Clipboard History
+        Clear Clipboard Data
       </Button>
     </Header>
   );
