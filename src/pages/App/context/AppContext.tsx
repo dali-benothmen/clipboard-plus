@@ -25,6 +25,10 @@ export interface AppContextType {
   setCategories: SetStateDispatcher<Category[]>;
   savedClipboardId: string;
   setSavedClipboardId: SetStateDispatcher<string>;
+  filteredClipboardItems: ClipboardItem[];
+  setFilteredClipboardItems: SetStateDispatcher<ClipboardItem[]>;
+  isSearching: boolean;
+  setIsSearching: SetStateDispatcher<boolean>;
 }
 
 const defaultContext: AppContextType = {
@@ -38,6 +42,10 @@ const defaultContext: AppContextType = {
   setCategories: () => {},
   savedClipboardId: '',
   setSavedClipboardId: () => {},
+  filteredClipboardItems: [],
+  setFilteredClipboardItems: () => {},
+  isSearching: false,
+  setIsSearching: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(defaultContext);
@@ -49,9 +57,13 @@ interface AppProviderProps {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [scene, setScene] = useState<Scene>(Scenes.HISTORY);
   const [clipboardItems, setClipboardItems] = useState<ClipboardItem[]>([]);
+  const [filteredClipboardItems, setFilteredClipboardItems] = useState<
+    ClipboardItem[]
+  >([]);
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [savedClipboardId, setSavedClipboardId] = useState<string>('');
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const value = useMemo(
     () => ({
@@ -65,8 +77,20 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setCategories,
       savedClipboardId,
       setSavedClipboardId,
+      filteredClipboardItems,
+      setFilteredClipboardItems,
+      isSearching,
+      setIsSearching,
     }),
-    [scene, clipboardItems, checkedItems, categories, savedClipboardId]
+    [
+      scene,
+      clipboardItems,
+      checkedItems,
+      categories,
+      savedClipboardId,
+      filteredClipboardItems,
+      isSearching,
+    ]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

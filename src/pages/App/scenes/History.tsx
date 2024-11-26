@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
-import { Tabs } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Spin, Tabs } from 'antd';
 import { BarsOutlined, AppstoreOutlined } from '@ant-design/icons';
-
-import GroupedItems, { GroupedItemsType } from '../components/GroupedItems';
+import GroupedItems from '../components/GroupedItems';
 import SaveClipboardModal from '../components/SaveClipboardModal';
 import { useAppContext } from '../hooks/useAppContext';
 import { useModalContext } from '../hooks/useModalContext';
+import FilteredItemsList from '../components/FilteredItemsList';
 import { uuid } from '../../../utils/uuid';
 import { Category, ClipboardItem } from '../../../types';
 
@@ -57,9 +57,17 @@ const GroupedByCategory = ({
 }) => <GroupedItems groupedItems={groupedItems} groupName="category" />;
 
 const History = () => {
-  const { clipboardItems, setClipboardItems, categories, setCategories } =
-    useAppContext();
+  const {
+    clipboardItems,
+    setClipboardItems,
+    categories,
+    setCategories,
+    filteredClipboardItems,
+    isSearching,
+  } = useAppContext();
   const { setIsModalOpen } = useModalContext();
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const groupedItemsByDate = useMemo(
     () => groupItemsByDate(clipboardItems),
@@ -70,29 +78,29 @@ const History = () => {
     [clipboardItems, categories]
   );
 
-  useEffect(() => {
-    const fetchClipboardHistory = () => {
-      chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
-        if (clipboardHistory) {
-          setClipboardItems(clipboardHistory);
-        }
-      });
-    };
-
-    fetchClipboardHistory();
-  }, []);
+  console.log({ clipboardItems, filteredClipboardItems });
 
   useEffect(() => {
-    const fetchCategories = () => {
-      chrome.storage.local.get(['categories'], ({ categories }) => {
-        if (categories) {
-          setCategories(categories);
+    const fetchData = () => {
+      setIsLoading(true);
+      chrome.storage.local.get(
+        ['clipboardHistory', 'categories'],
+        ({ clipboardHistory, categories }) => {
+          if (clipboardHistory) {
+            setClipboardItems(clipboardHistory);
+          }
+
+          if (categories) {
+            setCategories(categories);
+          }
+
+          setIsLoading(false);
         }
-      });
+      );
     };
 
-    fetchCategories();
-  }, [setCategories]);
+    fetchData();
+  }, [setClipboardItems, setCategories]);
 
   const handleCreateCategory = (categoryName: string) => {
     const trimmedName = categoryName.trim().toLowerCase();
@@ -172,26 +180,34 @@ const History = () => {
         onCreateCategory={handleCreateCategory}
         onSaveClipboard={handleSaveClipboardItemToCategory}
       />
-      <Tabs defaultActiveKey="1">
-        <Tabs.TabPane
-          key="1"
-          tab={
-            <span>
-              <BarsOutlined /> By date
-            </span>
-          }
-          children={<GroupedByDate groupedItems={groupedItemsByDate} />}
-        />
-        <Tabs.TabPane
-          key="2"
-          tab={
-            <span>
-              <AppstoreOutlined /> By category
-            </span>
-          }
-          children={<GroupedByCategory groupedItems={groupedItemsByCategory} />}
-        />
-      </Tabs>
+      {isLoading && <Spin tip="Loading" size="default" />}
+      {!isLoading && !isSearching && (
+        <Tabs defaultActiveKey="1">
+          <Tabs.TabPane
+            key="1"
+            tab={
+              <span>
+                <BarsOutlined /> By date
+              </span>
+            }
+            children={<GroupedByDate groupedItems={groupedItemsByDate} />}
+          />
+          <Tabs.TabPane
+            key="2"
+            tab={
+              <span>
+                <AppstoreOutlined /> By category
+              </span>
+            }
+            children={
+              <GroupedByCategory groupedItems={groupedItemsByCategory} />
+            }
+          />
+        </Tabs>
+      )}
+      {isSearching && (
+        <FilteredItemsList filteredItems={filteredClipboardItems} />
+      )}
     </>
   );
 };

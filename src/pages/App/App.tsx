@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { Layout, Input, theme } from 'antd';
-import type { GetProps } from 'antd';
+import { Layout, theme } from 'antd';
 
 import CheckedItemsToolbar from './components/CheckedItemsToolbar';
 import SidebarMenu from './components/SidebarMenu';
@@ -11,8 +10,6 @@ import { ClipboardItem } from '../../types';
 
 import './App.css';
 
-type SearchProps = GetProps<typeof Input.Search>;
-
 const { Content } = Layout;
 
 const App: React.FC = () => {
@@ -22,9 +19,6 @@ const App: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-
-  const onSearch: SearchProps['onSearch'] = (value) =>
-    console.log('value', value);
 
   const handleMoveToTrash = (checkedItems: string[]) => {
     chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
@@ -52,11 +46,7 @@ const App: React.FC = () => {
           onMoveToTrash={() => handleMoveToTrash(checkedItems)}
           nodeRef={nodeRef}
         />
-        <Header
-          scene={scene}
-          onSearch={onSearch}
-          onDeleteHistory={() => console.log('Deleted')}
-        />
+        <Header scene={scene} onDeleteHistory={() => console.log('Deleted')} />
         <Content
           style={{
             margin: '24px 90px',
