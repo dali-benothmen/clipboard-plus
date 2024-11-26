@@ -6,10 +6,13 @@ import SidebarMenu from './components/SidebarMenu';
 import Header from './components/Header';
 import AppScene from './scenes';
 import { useAppContext } from './hooks/useAppContext';
-import { ClipboardItem } from '../../types';
+import FilteredItemsList from './components/FilteredItemsList';
+import SaveClipboardModal from './components/SaveClipboardModal';
+import { useModalContext } from './hooks/useModalContext';
+import { uuid } from '../../utils/uuid';
+import { Category, ClipboardItem } from '../../types';
 
 import './App.css';
-import FilteredItemsList from './components/FilteredItemsList';
 
 const { Content } = Layout;
 
@@ -21,7 +24,11 @@ const App: React.FC = () => {
     setCheckedItems,
     setClipboardItems,
     filteredClipboardItems,
+    setFilteredClipboardItems,
+    setCategories,
   } = useAppContext();
+  const { setIsModalOpen } = useModalContext();
+
   const nodeRef = useRef(null);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -42,36 +49,129 @@ const App: React.FC = () => {
     });
   };
 
+  const handleCreateCategory = (categoryName: string) => {
+    const trimmedName = categoryName.trim().toLowerCase();
+
+    chrome.storage.local.get(['categories'], ({ categories = [] }) => {
+      const isDuplicate = categories.some(
+        (category: Category) =>
+          category.name.trim().toLowerCase() === trimmedName
+      );
+
+      if (isDuplicate)
+        return alert(`Category "${categoryName}" already exists.`);
+
+      const newCategory = { id: uuid(), name: categoryName.trim() };
+      const updatedCategories = [...categories, newCategory];
+
+      chrome.storage.local.set({ categories: updatedCategories }, () => {
+        setCategories(updatedCategories);
+      });
+    });
+  };
+
+  const handleSaveClipboardItemToCategory = async (
+    itemId: string,
+    categoryName: string
+  ) => {
+    const category = await ensureCategoryExists(categoryName);
+    const isFilteredListEmpty = filteredClipboardItems.length === 0;
+
+    if (category) {
+      chrome.storage.local.get(
+        ['clipboardHistory'],
+        ({ clipboardHistory = [] }) => {
+          const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
+            item.id === itemId ? { ...item, category } : item
+          );
+
+          const updatedFilteredItems = !isFilteredListEmpty
+            ? filteredClipboardItems.map((item: ClipboardItem) =>
+                item.id === itemId ? { ...item, category } : item
+              )
+            : [];
+
+          chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+            setClipboardItems(updatedItems);
+
+            if (!isFilteredListEmpty) {
+              setFilteredClipboardItems(updatedFilteredItems);
+            }
+
+            setIsModalOpen(false);
+          });
+        }
+      );
+    }
+  };
+
+  const ensureCategoryExists = async (
+    categoryName: string
+  ): Promise<Category | null> => {
+    const trimmedName = categoryName.trim().toLowerCase();
+
+    try {
+      const result = await chrome.storage.local.get(['categories']);
+      const categories: Category[] = result.categories || [];
+
+      let category = categories.find(
+        (c) => c.name.trim().toLowerCase() === trimmedName
+      );
+
+      if (!category) {
+        category = { id: uuid(), name: categoryName.trim() };
+        const updatedCategories = [...categories, category];
+
+        await chrome.storage.local.set({ categories: updatedCategories });
+        setCategories(updatedCategories);
+      }
+
+      return category;
+    } catch (error) {
+      console.error('Error ensuring category existence:', error);
+      return null;
+    }
+  };
+
   return (
-    <Layout>
-      <SidebarMenu onSceneChange={setScene} />
-      <Layout style={{ position: 'relative' }}>
-        <CheckedItemsToolbar
-          visible={checkedItems.length > 0}
-          checkedItemsCount={checkedItems.length}
-          onClearSelection={() => setCheckedItems([])}
-          onMoveToTrash={() => handleMoveToTrash(checkedItems)}
-          nodeRef={nodeRef}
-        />
-        <Header scene={scene} onDeleteHistory={() => console.log('Deleted')} />
-        <Content
-          style={{
-            margin: '24px 90px',
-            padding: 24,
-            minHeight: 280,
-            overflowY: 'scroll',
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          {filteredClipboardItems.length > 0 ? (
-            <FilteredItemsList filteredItems={filteredClipboardItems} />
-          ) : (
-            <AppScene scene={scene} />
-          )}
-        </Content>
+    <>
+      <SaveClipboardModal
+        onCreateCategory={handleCreateCategory}
+        onSaveClipboard={handleSaveClipboardItemToCategory}
+      />
+      <Layout>
+        <SidebarMenu onSceneChange={setScene} />
+        <Layout style={{ position: 'relative' }}>
+          <CheckedItemsToolbar
+            visible={checkedItems.length > 0}
+            checkedItemsCount={checkedItems.length}
+            onClearSelection={() => setCheckedItems([])}
+            onMoveToTrash={() => handleMoveToTrash(checkedItems)}
+            nodeRef={nodeRef}
+          />
+          <Header
+            scene={scene}
+            onDeleteHistory={() => console.log('Deleted')}
+          />
+          <Content
+            style={{
+              margin: '24px 90px',
+              padding: 24,
+              minHeight: 280,
+              overflowY: 'scroll',
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+          >
+            {filteredClipboardItems.length > 0 ? (
+              <FilteredItemsList filteredItems={filteredClipboardItems} />
+            ) : (
+              <AppScene scene={scene} />
+            )}
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </>
   );
 };
 
