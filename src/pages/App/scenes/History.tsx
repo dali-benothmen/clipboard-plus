@@ -1,11 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Skeleton, Spin, Tabs } from 'antd';
+import { Skeleton, Tabs } from 'antd';
 import { BarsOutlined, AppstoreOutlined } from '@ant-design/icons';
 import GroupedItems from '../components/GroupedItems';
-import SaveClipboardModal from '../components/SaveClipboardModal';
 import { useAppContext } from '../hooks/useAppContext';
-import { useModalContext } from '../hooks/useModalContext';
-import { uuid } from '../../../utils/uuid';
 import { Category, ClipboardItem } from '../../../types';
 
 const groupItemsByDate = (items: ClipboardItem[]) => {
@@ -58,7 +55,6 @@ const GroupedByCategory = ({
 const History = () => {
   const { clipboardItems, setClipboardItems, categories, setCategories } =
     useAppContext();
-  const { setIsModalOpen } = useModalContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -93,84 +89,8 @@ const History = () => {
     fetchData();
   }, [setClipboardItems, setCategories]);
 
-  const handleCreateCategory = (categoryName: string) => {
-    const trimmedName = categoryName.trim().toLowerCase();
-
-    chrome.storage.local.get(['categories'], ({ categories = [] }) => {
-      const isDuplicate = categories.some(
-        (category: Category) =>
-          category.name.trim().toLowerCase() === trimmedName
-      );
-
-      if (isDuplicate)
-        return alert(`Category "${categoryName}" already exists.`);
-
-      const newCategory = { id: uuid(), name: categoryName.trim() };
-      const updatedCategories = [...categories, newCategory];
-
-      chrome.storage.local.set({ categories: updatedCategories }, () => {
-        setCategories(updatedCategories);
-      });
-    });
-  };
-
-  const handleSaveClipboardItemToCategory = async (
-    itemId: string,
-    categoryName: string
-  ) => {
-    const category = await ensureCategoryExists(categoryName);
-
-    if (category) {
-      chrome.storage.local.get(
-        ['clipboardHistory'],
-        ({ clipboardHistory = [] }) => {
-          const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
-            item.id === itemId ? { ...item, category } : item
-          );
-
-          chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
-            setClipboardItems(updatedItems);
-            setIsModalOpen(false);
-          });
-        }
-      );
-    }
-  };
-
-  const ensureCategoryExists = async (
-    categoryName: string
-  ): Promise<Category | null> => {
-    const trimmedName = categoryName.trim().toLowerCase();
-
-    try {
-      const result = await chrome.storage.local.get(['categories']);
-      const categories: Category[] = result.categories || [];
-
-      let category = categories.find(
-        (c) => c.name.trim().toLowerCase() === trimmedName
-      );
-
-      if (!category) {
-        category = { id: uuid(), name: categoryName.trim() };
-        const updatedCategories = [...categories, category];
-
-        await chrome.storage.local.set({ categories: updatedCategories });
-        setCategories(updatedCategories);
-      }
-
-      return category;
-    } catch (error) {
-      console.error('Error ensuring category existence:', error);
-      return null;
-    }
-  };
-
   return (
     <>
-      <SaveClipboardModal
-        onCreateCategory={handleCreateCategory}
-        onSaveClipboard={handleSaveClipboardItemToCategory}
-      />
       {isLoading && <Skeleton active paragraph={{ rows: 10 }} />}
       {!isLoading && (
         <Tabs defaultActiveKey="1">
