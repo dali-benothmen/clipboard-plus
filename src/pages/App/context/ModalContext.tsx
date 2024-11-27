@@ -2,6 +2,8 @@ import React, { createContext, useState, useMemo } from 'react';
 import { SetStateDispatcher } from '../../../types';
 
 export interface ModalContextType {
+  isClearClipboardModalOpen: boolean;
+  setIsClearClipboardModalOpen: SetStateDispatcher<boolean>;
   isModalOpen: boolean;
   setIsModalOpen: SetStateDispatcher<boolean>;
   isCreateCategoryFormVisible: boolean;
@@ -9,6 +11,8 @@ export interface ModalContextType {
 }
 
 const defaultContext: ModalContextType = {
+  isClearClipboardModalOpen: false,
+  setIsClearClipboardModalOpen: () => {},
   isModalOpen: false,
   setIsModalOpen: () => {},
   isCreateCategoryFormVisible: false,
@@ -23,6 +27,8 @@ interface ModalProviderProps {
 
 export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isClearClipboardModalOpen, setIsClearClipboardModalOpen] =
+    useState<boolean>(false);
   const [isCreateCategoryFormVisible, setIsCreateCategoryFormVisible] =
     useState<boolean>(false);
 
@@ -30,10 +36,12 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     () => ({
       isModalOpen,
       isCreateCategoryFormVisible,
+      isClearClipboardModalOpen,
+      setIsClearClipboardModalOpen,
       setIsModalOpen,
       setIsCreateCategoryFormVisible,
     }),
-    [isModalOpen, isCreateCategoryFormVisible]
+    [isModalOpen, isCreateCategoryFormVisible, isClearClipboardModalOpen]
   );
 
   return (

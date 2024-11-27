@@ -71,7 +71,7 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
   const handleUnsaveClipboard = (id: string) => {
     chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
       const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
-        item.id === id ? { ...item, category: null } : item
+        item.id === id ? { ...item, category: null, pinned: false } : item
       );
 
       chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {

@@ -1,5 +1,15 @@
 import React, { useRef } from 'react';
-import { Layout, theme } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Flex,
+  Layout,
+  Modal,
+  Select,
+  Space,
+  theme,
+  Typography,
+} from 'antd';
 
 import CheckedItemsToolbar from './components/CheckedItemsToolbar';
 import SidebarMenu from './components/SidebarMenu';
@@ -13,6 +23,7 @@ import { uuid } from '../../utils/uuid';
 import { Category, ClipboardItem } from '../../types';
 
 import './App.css';
+import ClearClipboardModal from './components/ClearClipboardModal';
 
 const { Content } = Layout;
 
@@ -27,7 +38,7 @@ const App: React.FC = () => {
     setFilteredClipboardItems,
     setCategories,
   } = useAppContext();
-  const { setIsModalOpen } = useModalContext();
+  const { setIsModalOpen, setIsClearClipboardModalOpen } = useModalContext();
 
   const nodeRef = useRef(null);
   const {
@@ -82,12 +93,12 @@ const App: React.FC = () => {
         ['clipboardHistory'],
         ({ clipboardHistory = [] }) => {
           const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
-            item.id === itemId ? { ...item, category } : item
+            item.id === itemId ? { ...item, category, pinned: true } : item
           );
 
           const updatedFilteredItems = !isFilteredListEmpty
             ? filteredClipboardItems.map((item: ClipboardItem) =>
-                item.id === itemId ? { ...item, category } : item
+                item.id === itemId ? { ...item, category, pinned: true } : item
               )
             : [];
 
@@ -135,6 +146,7 @@ const App: React.FC = () => {
 
   return (
     <>
+      <ClearClipboardModal />
       <SaveClipboardModal
         onCreateCategory={handleCreateCategory}
         onSaveClipboard={handleSaveClipboardItemToCategory}
@@ -151,7 +163,7 @@ const App: React.FC = () => {
           />
           <Header
             scene={scene}
-            onDeleteHistory={() => console.log('Deleted')}
+            onDeleteHistory={() => setIsClearClipboardModalOpen(true)}
           />
           <Content
             style={{
