@@ -5,6 +5,7 @@ import App from './App';
 import { AppProvider } from './context/AppContext';
 import { ModalProvider } from './context/ModalContext';
 import { HeaderProvider } from './context/HeaderContext';
+import { DrawerProvider } from './context/DrawerContext';
 
 import './index.css';
 
@@ -15,7 +16,9 @@ root.render(
   <AppProvider>
     <ModalProvider>
       <HeaderProvider>
-        <App />
+        <DrawerProvider>
+          <App />
+        </DrawerProvider>
       </HeaderProvider>
     </ModalProvider>
   </AppProvider>
