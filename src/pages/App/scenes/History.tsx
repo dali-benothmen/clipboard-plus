@@ -6,7 +6,7 @@ import { useAppContext } from '../hooks/useAppContext';
 import { Category, ClipboardItem } from '../../../types';
 
 const groupItemsByDate = (items: ClipboardItem[]) => {
-  return items.reduce((acc, item) => {
+  const grouped = items.reduce((acc, item) => {
     const date = new Date(item.timestamp).toLocaleDateString('en-CA');
 
     if (!acc[date]) {
@@ -17,6 +17,10 @@ const groupItemsByDate = (items: ClipboardItem[]) => {
 
     return acc;
   }, {} as Record<string, ClipboardItem[]>);
+
+  return Object.fromEntries(
+    Object.entries(grouped).filter(([_, items]) => items.length > 0)
+  );
 };
 
 const groupItemsByCategory = (
