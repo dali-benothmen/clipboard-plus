@@ -97,7 +97,7 @@ const ClearClipboardModal = () => {
 
       setClipboardItems(finalItems);
       setIsClearClipboardModalOpen(false);
-      setLoading(true);
+      setLoading(false);
     });
   };
 
