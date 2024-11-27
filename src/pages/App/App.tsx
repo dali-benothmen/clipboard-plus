@@ -1,20 +1,12 @@
 import React, { useRef } from 'react';
-import {
-  Button,
-  Checkbox,
-  Flex,
-  Layout,
-  Modal,
-  Select,
-  Space,
-  theme,
-  Typography,
-} from 'antd';
+import { Layout, theme } from 'antd';
 
 import CheckedItemsToolbar from './components/CheckedItemsToolbar';
 import SidebarMenu from './components/SidebarMenu';
 import Header from './components/Header';
 import AppScene from './scenes';
+import ClearClipboardModal from './components/ClearClipboardModal';
+import ClipboardDetailsPanel from './components/ClipboardDetailsPanel';
 import { useAppContext } from './hooks/useAppContext';
 import FilteredItemsList from './components/FilteredItemsList';
 import SaveClipboardModal from './components/SaveClipboardModal';
@@ -23,7 +15,6 @@ import { uuid } from '../../utils/uuid';
 import { Category, ClipboardItem } from '../../types';
 
 import './App.css';
-import ClearClipboardModal from './components/ClearClipboardModal';
 
 const { Content } = Layout;
 
@@ -146,6 +137,7 @@ const App: React.FC = () => {
 
   return (
     <>
+      <ClipboardDetailsPanel />
       <ClearClipboardModal />
       <SaveClipboardModal
         onCreateCategory={handleCreateCategory}

@@ -19,6 +19,7 @@ import { useModalContext } from '../hooks/useModalContext';
 import { ClipboardItem } from '../../../types';
 import { truncateText } from '../../../utils/truncateText';
 import { formatTimeFromISO } from '../../../utils/dateFormat';
+import { useDrawerContext } from '../hooks/useDrawerContext';
 
 interface ListItemProps {
   item: ClipboardItem;
@@ -33,6 +34,7 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
     setSavedClipboardId,
   } = useAppContext();
   const { setIsModalOpen } = useModalContext();
+  const { setIsDrawerOpen, setClipboardDetails } = useDrawerContext();
 
   const handleCheck = (id: string) => {
     setCheckedItems((prevState) => {
@@ -85,6 +87,11 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
     setIsModalOpen(true);
   };
 
+  const handleOpenClipboardDetailsPanel = () => {
+    setClipboardDetails(item);
+    setIsDrawerOpen(true);
+  };
+
   return (
     <>
       {contextHolder}
@@ -113,7 +120,7 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
                 {
                   label: 'View Details',
                   key: '0',
-                  onClick: () => console.log('view details'),
+                  onClick: () => handleOpenClipboardDetailsPanel(),
                 },
                 {
                   label: 'Edit Label',
