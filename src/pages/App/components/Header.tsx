@@ -1,9 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { Input, Typography, Button, Layout, AutoComplete } from 'antd';
+import { Input, Typography, Layout, AutoComplete } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useAppContext } from '../hooks/useAppContext';
 import { debounce } from 'lodash';
-import { Scenes } from '../scenes';
 
 interface HeaderProps {
   scene: string;
