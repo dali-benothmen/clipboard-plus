@@ -6,13 +6,16 @@ import {
   List,
   message,
   Space,
+  Tooltip,
   Typography,
 } from 'antd';
 import {
   CopyOutlined,
+  DeleteOutlined,
   MoreOutlined,
   PushpinFilled,
   PushpinOutlined,
+  RollbackOutlined,
 } from '@ant-design/icons';
 import { useAppContext } from '../hooks/useAppContext';
 import { useModalContext } from '../hooks/useModalContext';
@@ -23,9 +26,10 @@ import { useDrawerContext } from '../hooks/useDrawerContext';
 
 interface ListItemProps {
   item: ClipboardItem;
+  isTrashed?: boolean;
 }
 
-const ListItem: React.FC<ListItemProps> = ({ item }) => {
+const ListItem: React.FC<ListItemProps> = ({ item, isTrashed }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const {
     checkedItems,
@@ -83,6 +87,31 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
     });
   };
 
+  const handleRestoreClipboard = (id: string) => {
+    chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+      const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
+        item.id === id ? { ...item, isTrashed: false } : item
+      );
+
+      chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+        setClipboardItems(updatedItems);
+      });
+    });
+  };
+
+  const handleDeleteItem = (id: string) => {
+    chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+      const updatedItems = clipboardHistory.filter(
+        (item: ClipboardItem) => item.id !== id
+      );
+
+      chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+        setClipboardItems(updatedItems);
+        setCheckedItems([]);
+      });
+    });
+  };
+
   const handleShowClipboardModal = (clipboardId: string) => {
     setSavedClipboardId(clipboardId);
     setIsModalOpen(true);
@@ -98,59 +127,76 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
     setIsEditLabelModalOpen(true);
   };
 
+  const groupedListItemAction = [
+    item.category ? (
+      <PushpinFilled
+        style={{ fontSize: 17, cursor: 'pointer' }}
+        onClick={() => handleUnsaveClipboard(item.id)}
+      />
+    ) : (
+      <PushpinOutlined
+        style={{ fontSize: 17, cursor: 'pointer' }}
+        onClick={() => handleShowClipboardModal(item.id)}
+      />
+    ),
+    <CopyOutlined
+      onClick={() => handleCopy(item.text)}
+      style={{ fontSize: 17, cursor: 'pointer' }}
+    />,
+
+    <Dropdown
+      menu={{
+        items: [
+          {
+            label: 'View Details',
+            key: '0',
+            onClick: () => handleOpenClipboardDetailsPanel(),
+          },
+          {
+            label: 'Assign a Label',
+            key: '1',
+            onClick: () => handleOpenEditLabelModal(item),
+          },
+          {
+            label: 'Assign Shortcut Key',
+            key: '2',
+            onClick: () => console.log('Assign Shortcut Key'),
+          },
+          {
+            label: 'Move to trash',
+            key: '3',
+            danger: true,
+            onClick: () => handleMoveToTrash([item.id]),
+          },
+        ],
+      }}
+      trigger={['click']}
+    >
+      <MoreOutlined style={{ fontSize: 17, cursor: 'pointer' }} />
+    </Dropdown>,
+  ];
+
+  const trashedListItemActions = [
+    <Tooltip title={'Restore'}>
+      <RollbackOutlined
+        onClick={() => handleRestoreClipboard(item.id)}
+        style={{ fontSize: 17, cursor: 'pointer' }}
+      />
+    </Tooltip>,
+    <Tooltip title={'Delete'}>
+      <DeleteOutlined
+        onClick={() => handleDeleteItem(item.id)}
+        style={{ fontSize: 17, cursor: 'pointer' }}
+      />
+    </Tooltip>,
+  ];
+
   return (
     <>
       {contextHolder}
 
       <List.Item
-        actions={[
-          item.category ? (
-            <PushpinFilled
-              style={{ fontSize: 17, cursor: 'pointer' }}
-              onClick={() => handleUnsaveClipboard(item.id)}
-            />
-          ) : (
-            <PushpinOutlined
-              style={{ fontSize: 17, cursor: 'pointer' }}
-              onClick={() => handleShowClipboardModal(item.id)}
-            />
-          ),
-          <CopyOutlined
-            onClick={() => handleCopy(item.text)}
-            style={{ fontSize: 17, cursor: 'pointer' }}
-          />,
-
-          <Dropdown
-            menu={{
-              items: [
-                {
-                  label: 'View Details',
-                  key: '0',
-                  onClick: () => handleOpenClipboardDetailsPanel(),
-                },
-                {
-                  label: 'Assign a Label',
-                  key: '1',
-                  onClick: () => handleOpenEditLabelModal(item),
-                },
-                {
-                  label: 'Assign Shortcut Key',
-                  key: '2',
-                  onClick: () => console.log('Assign Shortcut Key'),
-                },
-                {
-                  label: 'Move to trash',
-                  key: '3',
-                  danger: true,
-                  onClick: () => handleMoveToTrash([item.id]),
-                },
-              ],
-            }}
-            trigger={['click']}
-          >
-            <MoreOutlined style={{ fontSize: 17, cursor: 'pointer' }} />
-          </Dropdown>,
-        ]}
+        actions={isTrashed ? trashedListItemActions : groupedListItemAction}
       >
         <Space>
           <Checkbox
