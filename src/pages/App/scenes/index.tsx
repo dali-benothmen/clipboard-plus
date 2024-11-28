@@ -1,6 +1,7 @@
 import React from 'react';
 import History from './History';
 import Trash from './Trash';
+import Insights from './Insights';
 
 export enum Scenes {
   HISTORY = 'History',
@@ -20,7 +21,7 @@ const AppScene = ({ scene }: { scene: Scene }) => {
     case Scenes.HISTORY:
       return <History />;
     case Scenes.INSIGHTS:
-      return <div>Insights page is under construction.</div>;
+      return <Insights />;
     case Scenes.TRASH:
       return <Trash />;
     case Scenes.SETTINGS:

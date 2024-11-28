@@ -4,7 +4,7 @@ import { Layout, theme } from 'antd';
 import CheckedItemsToolbar from './components/CheckedItemsToolbar';
 import SidebarMenu from './components/SidebarMenu';
 import Header from './components/Header';
-import AppScene from './scenes';
+import AppScene, { Scenes } from './scenes';
 import ClipboardDetailsPanel from './components/ClipboardDetailsPanel';
 import { useAppContext } from './hooks/useAppContext';
 import FilteredItemsList from './components/FilteredItemsList';
@@ -172,7 +172,7 @@ const App: React.FC = () => {
               padding: 24,
               minHeight: 280,
               overflowY: 'scroll',
-              background: colorBgContainer,
+              background: scene === Scenes.INSIGHTS ? 'none' : colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
           >
