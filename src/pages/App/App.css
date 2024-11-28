@@ -71,3 +71,7 @@
   max-height: 215px;
   overflow-y: auto;
 }
+
+.ant-drawer-content-wrapper .ant-typography {
+  font-size: 13px;
+}

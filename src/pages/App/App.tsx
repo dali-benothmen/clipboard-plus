@@ -137,7 +137,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <ClipboardDetailsPanel />
+      <ClipboardDetailsPanel onMoveToTrash={handleMoveToTrash} />
       <ClearClipboardModal />
       <SaveClipboardModal
         onCreateCategory={handleCreateCategory}
