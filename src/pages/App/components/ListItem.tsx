@@ -29,11 +29,12 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const {
     checkedItems,
+    setClipboardItem,
     setCheckedItems,
     setClipboardItems,
     setSavedClipboardId,
   } = useAppContext();
-  const { setIsModalOpen } = useModalContext();
+  const { setIsModalOpen, setIsEditLabelModalOpen } = useModalContext();
   const { setIsDrawerOpen, setClipboardDetails } = useDrawerContext();
 
   const handleCheck = (id: string) => {
@@ -92,6 +93,11 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
     setIsDrawerOpen(true);
   };
 
+  const handleOpenEditLabelModal = (item: ClipboardItem) => {
+    setClipboardItem(item);
+    setIsEditLabelModalOpen(true);
+  };
+
   return (
     <>
       {contextHolder}
@@ -123,9 +129,9 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
                   onClick: () => handleOpenClipboardDetailsPanel(),
                 },
                 {
-                  label: 'Edit Label',
+                  label: 'Assign a Label',
                   key: '1',
-                  onClick: () => console.log('edit label'),
+                  onClick: () => handleOpenEditLabelModal(item),
                 },
                 {
                   label: 'Assign Shortcut Key',
@@ -157,7 +163,7 @@ const ListItem: React.FC<ListItemProps> = ({ item }) => {
           <div className="clipboard-item-info" style={{ marginLeft: 20 }}>
             <Avatar shape="square" size={18} src={item.source.favicon} />
             <Typography.Text style={{ margin: '0 7px' }}>
-              {truncateText(item.label, 40)}
+              {truncateText(item.label, 50)}
             </Typography.Text>
             <span> - </span>
             <Typography.Text type="secondary" style={{ margin: '0 7px' }}>

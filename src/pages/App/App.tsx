@@ -11,6 +11,7 @@ import { useAppContext } from './hooks/useAppContext';
 import FilteredItemsList from './components/FilteredItemsList';
 import SaveClipboardModal from './components/SaveClipboardModal';
 import { useModalContext } from './hooks/useModalContext';
+import AssignLabelModal from './components/AssignLabelModal';
 import { uuid } from '../../utils/uuid';
 import { Category, ClipboardItem } from '../../types';
 
@@ -137,6 +138,7 @@ const App: React.FC = () => {
 
   return (
     <>
+      <AssignLabelModal />
       <ClipboardDetailsPanel onMoveToTrash={handleMoveToTrash} />
       <ClearClipboardModal />
       <SaveClipboardModal

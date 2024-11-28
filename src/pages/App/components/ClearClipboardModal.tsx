@@ -17,8 +17,6 @@ import { ClipboardItem } from '../../../types';
 type TimeRange = 'lastHour' | 'lastDay' | 'lastWeek' | 'lastMonth' | 'allTime';
 
 const ClearClipboardModal = () => {
-  //   const [messageApi, contextHolder] = message.useMessage();
-
   const { setClipboardItems, clipboardItems } = useAppContext();
   const { isClearClipboardModalOpen, setIsClearClipboardModalOpen } =
     useModalContext();

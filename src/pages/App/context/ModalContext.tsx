@@ -8,6 +8,8 @@ export interface ModalContextType {
   setIsModalOpen: SetStateDispatcher<boolean>;
   isCreateCategoryFormVisible: boolean;
   setIsCreateCategoryFormVisible: SetStateDispatcher<boolean>;
+  isEditLabelModalOpen: boolean;
+  setIsEditLabelModalOpen: SetStateDispatcher<boolean>;
 }
 
 const defaultContext: ModalContextType = {
@@ -17,6 +19,8 @@ const defaultContext: ModalContextType = {
   setIsModalOpen: () => {},
   isCreateCategoryFormVisible: false,
   setIsCreateCategoryFormVisible: () => {},
+  isEditLabelModalOpen: false,
+  setIsEditLabelModalOpen: () => {},
 };
 
 export const ModalContext = createContext<ModalContextType>(defaultContext);
@@ -31,6 +35,8 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     useState<boolean>(false);
   const [isCreateCategoryFormVisible, setIsCreateCategoryFormVisible] =
     useState<boolean>(false);
+  const [isEditLabelModalOpen, setIsEditLabelModalOpen] =
+    useState<boolean>(false);
 
   const value = useMemo(
     () => ({
@@ -40,8 +46,15 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
       setIsClearClipboardModalOpen,
       setIsModalOpen,
       setIsCreateCategoryFormVisible,
+      isEditLabelModalOpen,
+      setIsEditLabelModalOpen,
     }),
-    [isModalOpen, isCreateCategoryFormVisible, isClearClipboardModalOpen]
+    [
+      isModalOpen,
+      isCreateCategoryFormVisible,
+      isClearClipboardModalOpen,
+      isEditLabelModalOpen,
+    ]
   );
 
   return (

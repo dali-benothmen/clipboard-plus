@@ -27,6 +27,8 @@ export interface AppContextType {
   setSavedClipboardId: SetStateDispatcher<string>;
   filteredClipboardItems: ClipboardItem[];
   setFilteredClipboardItems: SetStateDispatcher<ClipboardItem[]>;
+  clipboardItem: ClipboardItem | null;
+  setClipboardItem: SetStateDispatcher<ClipboardItem | null>;
 }
 
 const defaultContext: AppContextType = {
@@ -42,6 +44,8 @@ const defaultContext: AppContextType = {
   setSavedClipboardId: () => {},
   filteredClipboardItems: [],
   setFilteredClipboardItems: () => {},
+  clipboardItem: null,
+  setClipboardItem: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(defaultContext);
@@ -59,6 +63,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [savedClipboardId, setSavedClipboardId] = useState<string>('');
+  const [clipboardItem, setClipboardItem] = useState<ClipboardItem | null>(
+    null
+  );
 
   const value = useMemo(
     () => ({
@@ -74,6 +81,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setSavedClipboardId,
       filteredClipboardItems,
       setFilteredClipboardItems,
+      clipboardItem,
+      setClipboardItem,
     }),
     [
       scene,
@@ -82,6 +91,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       categories,
       savedClipboardId,
       filteredClipboardItems,
+      clipboardItem,
     ]
   );
 
