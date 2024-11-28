@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Skeleton, Tabs } from 'antd';
+import { Button, Skeleton, Tabs } from 'antd';
 import { BarsOutlined, AppstoreOutlined } from '@ant-design/icons';
 import GroupedItems from '../components/GroupedItems';
 import { useAppContext } from '../hooks/useAppContext';
+import { useModalContext } from '../hooks/useModalContext';
+import ClearClipboardModal from '../components/ClearClipboardModal';
+import AssignLabelModal from '../components/AssignLabelModal';
 import { Category, ClipboardItem } from '../../../types';
 
 const groupItemsByDate = (items: ClipboardItem[]) => {
@@ -59,6 +62,8 @@ const GroupedByCategory = ({
 const History = () => {
   const { clipboardItems, setClipboardItems, categories, setCategories } =
     useAppContext();
+  const { isClearClipboardModalOpen, setIsClearClipboardModalOpen } =
+    useModalContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -95,9 +100,23 @@ const History = () => {
 
   return (
     <>
+      <AssignLabelModal />
+      <ClearClipboardModal />
       {isLoading && <Skeleton active paragraph={{ rows: 10 }} />}
       {!isLoading && (
-        <Tabs defaultActiveKey="1">
+        <Tabs
+          defaultActiveKey="1"
+          tabBarExtraContent={
+            <Button
+              type="default"
+              variant="outlined"
+              shape="round"
+              onClick={() => setIsClearClipboardModalOpen(true)}
+            >
+              Clear Clipboard Data
+            </Button>
+          }
+        >
           <Tabs.TabPane
             key="1"
             tab={

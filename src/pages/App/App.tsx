@@ -5,13 +5,11 @@ import CheckedItemsToolbar from './components/CheckedItemsToolbar';
 import SidebarMenu from './components/SidebarMenu';
 import Header from './components/Header';
 import AppScene from './scenes';
-import ClearClipboardModal from './components/ClearClipboardModal';
 import ClipboardDetailsPanel from './components/ClipboardDetailsPanel';
 import { useAppContext } from './hooks/useAppContext';
 import FilteredItemsList from './components/FilteredItemsList';
 import SaveClipboardModal from './components/SaveClipboardModal';
 import { useModalContext } from './hooks/useModalContext';
-import AssignLabelModal from './components/AssignLabelModal';
 import { uuid } from '../../utils/uuid';
 import { Category, ClipboardItem } from '../../types';
 
@@ -30,7 +28,7 @@ const App: React.FC = () => {
     setFilteredClipboardItems,
     setCategories,
   } = useAppContext();
-  const { setIsModalOpen, setIsClearClipboardModalOpen } = useModalContext();
+  const { setIsModalOpen } = useModalContext();
 
   const nodeRef = useRef(null);
   const {
@@ -151,9 +149,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <AssignLabelModal />
       <ClipboardDetailsPanel onMoveToTrash={handleMoveToTrash} />
-      <ClearClipboardModal />
       <SaveClipboardModal
         onCreateCategory={handleCreateCategory}
         onSaveClipboard={handleSaveClipboardItemToCategory}
@@ -169,10 +165,7 @@ const App: React.FC = () => {
             onMoveToTrash={() => handleMoveToTrash(checkedItems)}
             nodeRef={nodeRef}
           />
-          <Header
-            scene={scene}
-            onDeleteHistory={() => setIsClearClipboardModalOpen(true)}
-          />
+          <Header scene={scene} />
           <Content
             style={{
               margin: '24px 90px',

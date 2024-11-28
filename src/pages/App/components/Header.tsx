@@ -3,15 +3,15 @@ import { Input, Typography, Button, Layout, AutoComplete } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useAppContext } from '../hooks/useAppContext';
 import { debounce } from 'lodash';
+import { Scenes } from '../scenes';
 
 interface HeaderProps {
   scene: string;
-  onDeleteHistory: () => void;
 }
 
 const { Header } = Layout;
 
-const AppHeader: React.FC<HeaderProps> = ({ scene, onDeleteHistory }) => {
+const AppHeader: React.FC<HeaderProps> = ({ scene }) => {
   const { clipboardItems, setFilteredClipboardItems } = useAppContext();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,9 +83,7 @@ const AppHeader: React.FC<HeaderProps> = ({ scene, onDeleteHistory }) => {
           style={{ width: 500 }}
         />
       </AutoComplete>
-      <Button type="default" variant="solid" onClick={onDeleteHistory}>
-        Clear Clipboard Data
-      </Button>
+      <div style={{ width: 163, height: 10 }} />
     </Header>
   );
 };
