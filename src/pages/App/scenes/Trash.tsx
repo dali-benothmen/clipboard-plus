@@ -82,7 +82,6 @@ const Trash = () => {
             </Typography.Text>
             <Button
               variant="outlined"
-              shape="round"
               onClick={() => setIsEmptyTrashModalOpen(true)}
             >
               Empty Trash

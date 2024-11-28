@@ -110,7 +110,6 @@ const History = () => {
             <Button
               type="default"
               variant="outlined"
-              shape="round"
               onClick={() => setIsClearClipboardModalOpen(true)}
             >
               Clear Clipboard Data
