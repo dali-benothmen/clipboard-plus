@@ -28,8 +28,10 @@ const AppHeader: React.FC<HeaderProps> = ({ scene }) => {
         return;
       }
 
-      const filteredItems = clipboardItems.filter((item) =>
-        item.label.toLowerCase().includes(trimmedTerm.toLowerCase())
+      const filteredItems = clipboardItems.filter(
+        (item) =>
+          !item.isTrashed &&
+          item.label.toLowerCase().includes(trimmedTerm.toLowerCase())
       );
 
       const autocompleteOptions = filteredItems.map((item) => ({
