@@ -10,6 +10,7 @@ type CheckedItemsToolbarProps = {
   checkedItemsCount: number;
   onClearSelection: () => void;
   onMoveToTrash: () => void;
+  onRestore: () => void;
   onDelete: () => void;
   nodeRef: React.RefObject<HTMLDivElement>;
 };
@@ -20,6 +21,7 @@ const CheckedItemsToolbar: React.FC<CheckedItemsToolbarProps> = ({
   onClearSelection,
   onMoveToTrash,
   onDelete,
+  onRestore,
   nodeRef,
 }) => {
   const { scene } = useAppContext();
@@ -55,14 +57,21 @@ const CheckedItemsToolbar: React.FC<CheckedItemsToolbarProps> = ({
           />
           <Typography.Text>{checkedItemsCount} selected</Typography.Text>
         </Space>
-        <Button
-          color="danger"
-          variant="outlined"
-          shape="round"
-          onClick={scene === Scenes.TRASH ? onDelete : onMoveToTrash}
-        >
-          {scene === Scenes.TRASH ? 'Delete from Trash' : 'Move to Trash'}
-        </Button>
+        <Space>
+          {scene === Scenes.TRASH && (
+            <Button variant="outlined" shape="round" onClick={onRestore}>
+              Restore
+            </Button>
+          )}
+          <Button
+            color="danger"
+            variant="outlined"
+            shape="round"
+            onClick={scene === Scenes.TRASH ? onDelete : onMoveToTrash}
+          >
+            {scene === Scenes.TRASH ? 'Delete' : 'Move to Trash'}
+          </Button>
+        </Space>
       </div>
     </CSSTransition>
   );

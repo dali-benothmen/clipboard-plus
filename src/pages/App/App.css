@@ -47,7 +47,9 @@
   align-items: center;
 }
 .scene-name {
-  font-size: 30px !important;
+  color: #252525 !important;
+  font-size: 24px !important;
+  font-weight: 400 !important;
   margin: 0 !important;
   width: 180px !important;
 }

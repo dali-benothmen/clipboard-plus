@@ -63,6 +63,19 @@ const App: React.FC = () => {
     });
   };
 
+  const handleRestoreClipboard = (checkedItems: string[]) => {
+    chrome.storage.local.get(['clipboardHistory'], ({ clipboardHistory }) => {
+      const updatedItems = clipboardHistory.map((item: ClipboardItem) =>
+        checkedItems.includes(item.id) ? { ...item, isTrashed: false } : item
+      );
+
+      chrome.storage.local.set({ clipboardHistory: updatedItems }, () => {
+        setClipboardItems(updatedItems);
+        setCheckedItems([]);
+      });
+    });
+  };
+
   const handleCreateCategory = (categoryName: string) => {
     const trimmedName = categoryName.trim().toLowerCase();
 
@@ -163,6 +176,7 @@ const App: React.FC = () => {
             onClearSelection={() => setCheckedItems([])}
             onDelete={() => handleDelete(checkedItems)}
             onMoveToTrash={() => handleMoveToTrash(checkedItems)}
+            onRestore={() => handleRestoreClipboard(checkedItems)}
             nodeRef={nodeRef}
           />
           <Header scene={scene} />
